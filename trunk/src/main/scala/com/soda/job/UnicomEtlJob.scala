@@ -18,7 +18,7 @@ object UnicomEtlJob extends ConfigJob{
 
   def main(args: Array[String]): Unit = {
 
-    val conf = new SparkConf().setMaster("local").setAppName("SodaModel") //创建环境变量
+    val conf = new SparkConf().setMaster("local").setAppName("UnicomEtlJob") //创建环境变量
     val sc = new SparkContext(conf)  //创建环境变量实例
     val data = sc.textFile("hdfs://192.168.20.90:9000/soda/test/5.1-位置数据.csv")  //读取数据
 
@@ -32,15 +32,16 @@ object UnicomEtlJob extends ConfigJob{
 
     processRdd(pointDetail);
 
+    System.exit(0)
   }
 
   override def packagePointDetail(any: Any): Array[PointDetail] ={
     val userDay=any.asInstanceOf[UserDay]
     val buffer=new ArrayBuffer[PointDetail]()
     for(i <- 0 until userDay.trajectory.length){
-      val rowKey = userDay.date + i + new ObjectId().toString
       val point=userDay.trajectory(i)
       if(point!=null){
+        val rowKey = createRowKey(userDay.date,i)
         val pointDetail=new PointDetail(rowKey,new Basic("",point.longitude,point.latitude,"",userDay.date,i+""),new User(IdentityTypeEnum.IMEI,userDay.imei))
         buffer.+=(pointDetail)
       }

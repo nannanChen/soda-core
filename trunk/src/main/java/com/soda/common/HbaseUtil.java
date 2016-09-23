@@ -1,9 +1,8 @@
 package com.soda.common;
 
-import com.soda.vo.PointDetail;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.client.*;
-import org.apache.hadoop.hbase.util.Bytes;
+import org.apache.hadoop.hbase.filter.*;
 import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.io.Serializable;
@@ -44,17 +43,19 @@ public class HbaseUtil implements Serializable {
         return hadoopConf;
     }
 
-    @SuppressWarnings("all")
     public static void main(String[] args) throws IOException {
+        HTable table = new HTable(hadoopConf, "point_detail");
+        Scan scan = new Scan();
 
-        HTable table = new HTable(hadoopConf, "Bttray_WhiteList");
-        for(int i=0;i<20;i++){
-            Put put = new Put(Bytes.toBytes("OP1KPQWJOPEQWOENMNFVNWOVNWOEGIWJIOE"+i));
-            put.add(Bytes.toBytes("basic"), Bytes.toBytes("file_name"), Bytes.toBytes(i+".txt"));
-            put.add(Bytes.toBytes("basic"), Bytes.toBytes("file_path"), Bytes.toBytes("c://"+i+".txt"));
-            table.put(put);
+//        Filter prefixFilter = new RowFilter(CompareFilter.CompareOp.EQUAL, new BinaryPrefixComparator("201603019".getBytes()));
+        Filter prefixFilter = new RowFilter(CompareFilter.CompareOp.EQUAL, new RegexStringComparator(".*2016030117"));
+        scan.setFilter(prefixFilter);
+
+        ResultScanner scanner = table.getScanner(scan);
+        for (Result res : scanner) {
+            System.out.println(res);
         }
-
+        scanner.close();
     }
 
 }
