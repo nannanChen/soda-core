@@ -3,7 +3,6 @@ package com.soda.common
 import com.soda.vo.PointDetail
 import org.apache.hadoop.hbase.client.{Put, HTable}
 import org.apache.hadoop.hbase.util.Bytes
-import org.apache.log4j.Logger
 import org.apache.spark.rdd.RDD
 
 /**
@@ -12,6 +11,16 @@ import org.apache.spark.rdd.RDD
 trait ConfigJob extends Serializable{
 
 //  val log_ : Logger = Logger.getLogger(this.getClass)
+
+  /**
+    * 生成rowkey
+    * @param date
+    * @param time
+    * @return
+    */
+  def createRowKey(date: String, time: Int):String={
+    new StringBuffer(new ObjectId().toString).reverse().toString + date + time
+  }
 
   /**
     * 填充每条轨迹的前驱后继
@@ -65,8 +74,8 @@ trait ConfigJob extends Serializable{
         records.foreach(detail=>{
           val put: Put = new Put(Bytes.toBytes(detail.rowkey))
           put.add(Bytes.toBytes("basic"), Bytes.toBytes("precursor"), Bytes.toBytes(detail.basic.precursor))
-          put.add(Bytes.toBytes("basic"), Bytes.toBytes("longitude"), Bytes.toBytes(detail.basic.longitude))
-          put.add(Bytes.toBytes("basic"), Bytes.toBytes("latitude"), Bytes.toBytes(detail.basic.latitude))
+          put.add(Bytes.toBytes("basic"), Bytes.toBytes("longitude"), Bytes.toBytes(detail.basic.longitude+""))
+          put.add(Bytes.toBytes("basic"), Bytes.toBytes("latitude"), Bytes.toBytes(detail.basic.latitude+""))
           put.add(Bytes.toBytes("basic"), Bytes.toBytes("next"), Bytes.toBytes(detail.basic.next))
           put.add(Bytes.toBytes("basic"), Bytes.toBytes("date"), Bytes.toBytes(detail.basic.date))
           put.add(Bytes.toBytes("basic"), Bytes.toBytes("time"), Bytes.toBytes(detail.basic.time))
