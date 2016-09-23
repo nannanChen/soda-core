@@ -12,6 +12,7 @@ import org.apache.http.util.EntityUtils;
 import org.json.JSONObject;
 
 import java.io.InputStream;
+import java.io.Serializable;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
@@ -19,7 +20,7 @@ import java.util.Map;
 /**
  * Created by Administrator on 2016/9/22.
  */
-public class SubwayImpl implements Subway {
+public class SubwayImpl implements Subway,Serializable {
     public static final String KEY_1 = "cg4sKjksgLn3svtst32DOpxd2raYipb8";
     public Map getlongitudeandlatitude(String address) {
         try {
@@ -42,7 +43,6 @@ public class SubwayImpl implements Subway {
                 }
                 return map;
             }
-//            }
         } catch (Exception e) {
             e.printStackTrace();
         }

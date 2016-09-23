@@ -19,6 +19,10 @@ trait ConfigJob extends Serializable{
     * @return
     */
   def createRowKey(date: String, time: Int):String={
+    createRowKey(date,time)
+  }
+
+  def createRowKey(date: String, time: String):String={
     new StringBuffer(new ObjectId().toString).reverse().toString + date + time
   }
 
@@ -69,22 +73,24 @@ trait ConfigJob extends Serializable{
     */
   def processRdd(rdd: RDD[Array[PointDetail]]) = {
     rdd.map(arr=>configPrecursorAndNext(arr)).foreachPartition(partitionOfRecords=>{
-      val table: HTable = new HTable(HbaseUtil.getConfiguration,ConstantsUtil.POINT_DETAIL)
-      partitionOfRecords.foreach(records=>{
-        records.foreach(detail=>{
-          val put: Put = new Put(Bytes.toBytes(detail.rowkey))
-          put.add(Bytes.toBytes("basic"), Bytes.toBytes("precursor"), Bytes.toBytes(detail.basic.precursor))
-          put.add(Bytes.toBytes("basic"), Bytes.toBytes("longitude"), Bytes.toBytes(detail.basic.longitude+""))
-          put.add(Bytes.toBytes("basic"), Bytes.toBytes("latitude"), Bytes.toBytes(detail.basic.latitude+""))
-          put.add(Bytes.toBytes("basic"), Bytes.toBytes("next"), Bytes.toBytes(detail.basic.next))
-          put.add(Bytes.toBytes("basic"), Bytes.toBytes("date"), Bytes.toBytes(detail.basic.date))
-          put.add(Bytes.toBytes("basic"), Bytes.toBytes("time"), Bytes.toBytes(detail.basic.time))
-          put.add(Bytes.toBytes("user"), Bytes.toBytes("valType"), Bytes.toBytes(detail.user.valType.toString))
-          put.add(Bytes.toBytes("user"), Bytes.toBytes("value"), Bytes.toBytes(detail.user.value))
-          table.put(put)
-          println("detail.rowkey:"+detail.rowkey)
-        })
-      })
+      partitionOfRecords.foreach(processArray(_))
+    })
+  }
+
+  def processArray(records:Array[PointDetail]) = {
+    val table: HTable = new HTable(HbaseUtil.getConfiguration,ConstantsUtil.POINT_DETAIL)
+    records.foreach(detail=>{
+      val put: Put = new Put(Bytes.toBytes(detail.rowkey))
+      put.add(Bytes.toBytes("basic"), Bytes.toBytes("precursor"), Bytes.toBytes(detail.basic.precursor))
+      put.add(Bytes.toBytes("basic"), Bytes.toBytes("longitude"), Bytes.toBytes(detail.basic.longitude+""))
+      put.add(Bytes.toBytes("basic"), Bytes.toBytes("latitude"), Bytes.toBytes(detail.basic.latitude+""))
+      put.add(Bytes.toBytes("basic"), Bytes.toBytes("next"), Bytes.toBytes(detail.basic.next))
+      put.add(Bytes.toBytes("basic"), Bytes.toBytes("date"), Bytes.toBytes(detail.basic.date))
+      put.add(Bytes.toBytes("basic"), Bytes.toBytes("time"), Bytes.toBytes(detail.basic.time))
+      put.add(Bytes.toBytes("user"), Bytes.toBytes("valType"), Bytes.toBytes(detail.user.valType.toString))
+      put.add(Bytes.toBytes("user"), Bytes.toBytes("value"), Bytes.toBytes(detail.user.value))
+      table.put(put)
+      println("detail.rowkey:"+detail.rowkey)
     })
   }
 
