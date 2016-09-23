@@ -1,0 +1,10 @@
+create 'point_detail','basic','user'
+put 'point_detail','2016030100uuid0','basic:precursor','null'
+put 'point_detail','2016030100uuid0','basic:longitude','121.48312'
+put 'point_detail','2016030100uuid0','basic:latitude','31.33478001'
+put 'point_detail','2016030100uuid0','basic:next','2016030100uuid1'
+put 'point_detail','2016030100uuid0','basic:date','20160301'
+put 'point_detail','2016030100uuid0','basic:time','00'
+
+put 'point_detail','2016030100uuid0','user:IMEI','e845c0df01f6b30e19b0fa6932307132'
+
