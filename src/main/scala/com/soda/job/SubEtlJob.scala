@@ -13,7 +13,7 @@ import scala.io.Source
   * Created by Administrator on 2016/9/23.
   * 将地铁数据的位置信息转换为经纬度，并且组合起每个卡号每天的行为
   */
-object SubDataTo extends ConfigJob {
+object SubEtlJob extends ConfigJob {
 
   //
   def parseFile(file: String):Unit = {
