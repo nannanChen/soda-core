@@ -1,4 +1,4 @@
-package com.soda.com.soda.common;
+package com.soda.common;
 
 /**
  * Created by Administrator on 2016/9/22.
