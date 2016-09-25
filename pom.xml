@@ -10,7 +10,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <hadoop.version>2.6.0</hadoop.version>
-        <hbase.version>0.99.2</hbase.version>
+        <hbase.version>1.2.0</hbase.version>
         <spark.version>1.6.0</spark.version>
     </properties>
 
@@ -29,6 +29,12 @@
         </dependency>
 
         <!-- For hbase start-->
+        <dependency>
+            <groupId>org.apache.hbase</groupId>
+            <artifactId>hbase</artifactId>
+            <version>${hbase.version}</version>
+        </dependency>
+
         <dependency>
             <groupId>org.apache.hbase</groupId>
             <artifactId>hbase-server</artifactId>
