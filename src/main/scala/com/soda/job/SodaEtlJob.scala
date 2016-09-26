@@ -29,8 +29,8 @@ object SodaEtlJob {
 
   def main(args: Array[String]): Unit = {
 
-    val rs=computeDistance(new Point(121.81459,31.54292001),nanJingDong);
-    println(rs)
+//    val rs=computeDistance(new Point(121.81459,31.54292001),nanJingDong);
+//    println(rs)
 
     val conf = new SparkConf().setAppName("SodaEtlJob")
     val sc = new SparkContext(conf)
@@ -42,6 +42,8 @@ object SodaEtlJob {
 
     //读取hbase所有点数据
     val hbaseTable = sc.newAPIHadoopRDD(hbaseConf, classOf[TableInputFormat], classOf[org.apache.hadoop.hbase.io.ImmutableBytesWritable], classOf[org.apache.hadoop.hbase.client.Result])
+
+    println("hbaseTable partitions:"+hbaseTable.partitions.size)
 
     //hbase每条数据封装成PointDetail对象
     val pointDetail=hbaseTable.map(tuple2=>packagePointDetail(tuple2._1,tuple2._2))
