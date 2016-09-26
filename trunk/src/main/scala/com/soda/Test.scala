@@ -9,18 +9,10 @@ import org.apache.hadoop.hbase.util.Bytes
 object Test {
 
   def main(args: Array[String]) {
-//    Range(10,-1,-1).foreach(e => println(new StringBuffer(new ObjectId().toString).reverse().toString))
-//    val rk=Bytes.toBytes("20150812163500.D010")
-    val rowKey=new ObjectId().toString;
-//    println("rowKey:"+rowKey)
+      val key="2016030119"
 
-    val rk=Bytes.toBytes("3ccbe609dabccffa51df4e75201603013")
-    println(rk.length)
+    println(key.substring(8,key.length))
 
-
-    for( a <- 0 until 9){
-      println( "Value of a: " + a );
-    }
   }
 
 }

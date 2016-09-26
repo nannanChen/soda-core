@@ -1,13 +1,13 @@
 package com.soda.job
 
-import com.soda.common.{DistanceUtil, IdentityTypeEnum, ConstantsUtil}
+import com.soda.common.{HbaseUtil, DistanceUtil, IdentityTypeEnum, ConstantsUtil}
 import com.soda.vo.{User, Basic, PointDetail}
 import org.apache.hadoop.hbase.HBaseConfiguration
 import org.apache.hadoop.hbase.client.Result
 import org.apache.hadoop.hbase.io.ImmutableBytesWritable
 import org.apache.hadoop.hbase.mapreduce.TableInputFormat
 import org.apache.hadoop.hbase.util.Bytes
-import org.apache.spark.{SparkConf, SparkContext}
+import org.apache.spark.{Partitioner, SparkConf, SparkContext}
 
 /**
   * 数据整合  提供前端展现使用
@@ -43,35 +43,58 @@ object SodaEtlJob {
     //读取hbase所有点数据
     val hbaseTable = sc.newAPIHadoopRDD(hbaseConf, classOf[TableInputFormat], classOf[org.apache.hadoop.hbase.io.ImmutableBytesWritable], classOf[org.apache.hadoop.hbase.client.Result])
 
-    println("hbaseTable partitions:"+hbaseTable.partitions.size)
+    println("hbaseTable 33 partitions:"+hbaseTable.partitions.size)
 
     //hbase每条数据封装成PointDetail对象
     val pointDetail=hbaseTable.map(tuple2=>packagePointDetail(tuple2._1,tuple2._2))
 
-    //对所有的点按照(日期+小时)进行分组
-    val pointByDateTime=pointDetail.map(point=>{(point.basic.date+point.basic.time,Seq(point))}).reduceByKey(_.union(_))
+    //对所有的点按照(小时)进行分区
+    val pointByDateTime=pointDetail.map(point=>{(point.basic.time,point)}).partitionBy(new TimePartitioner(24))
 
-    //计算每组数据跟商圈距离
-    val distancePoint=pointByDateTime.map(dateTime=>{(dateTime._1,dateTime._2.map(detail=>{
-      val point=new Point(detail.basic.longitude,detail.basic.latitude)
-      (detail,computeDistance(point,nanJingDong),computeDistance(point,xuJiaHui),computeDistance(point,xinZhuang))
-    }))})
+    println("pointByDateTime 22 pointByDateTime:"+pointByDateTime.partitions.size)
 
-    distancePoint.foreach(dateTime=>{
-      dateTime._2.sortBy(_._2).foreach(t=>{
-        println("nanJingDong:"+dateTime._1+"->"+t._1.rowkey+"-> "+t._2+" "+t._3+" "+t._4)
-      })
-      dateTime._2.sortBy(_._3).foreach(t=>{
-        println("xuJiaHui:"+dateTime._1+"->"+t._1.rowkey+"-> "+t._2+" "+t._3+" "+t._4)
-      })
-      dateTime._2.sortBy(_._4).foreach(t=>{
-        println("xinZhuang:"+dateTime._1+"->"+t._1.rowkey+"-> "+t._2+" "+t._3+" "+t._4)
-      })
-    })
+    //计算每个小时内的点跟商圈距离
+    val distancePoint=pointByDateTime.map(dateTime=>{
+      val point=new Point(dateTime._2.basic.longitude,dateTime._2.basic.latitude)
+      (dateTime._2,computeDistance(point,nanJingDong),computeDistance(point,xuJiaHui),computeDistance(point,xinZhuang))
+    }).cache()
 
+
+    val nanJingDongRs=distancePoint.filter(_._2<distance).map(tuple4=>{(getPointMapInfo("nanJingDong",tuple4._1,tuple4._2))})
+    nanJingDongRs.saveAsTextFile(ConstantsUtil.HDFS_ADDRESS+"/soda/mysql/nanJingDongRs")
+
+    val xuJiaHuiRs=distancePoint.filter(_._3<distance).map(tuple4=>{(getPointMapInfo("xuJiaHui",tuple4._1,tuple4._3))})
+    xuJiaHuiRs.saveAsTextFile(ConstantsUtil.HDFS_ADDRESS+"/soda/mysql/xuJiaHuiRs")
+
+    val xinZhuangRs=distancePoint.filter(_._4<distance).map(tuple4=>{(getPointMapInfo("xinZhuang",tuple4._1,tuple4._4))})
+    xinZhuangRs.saveAsTextFile(ConstantsUtil.HDFS_ADDRESS+"/soda/mysql/xinZhuangRs")
+
+    println("SodaEtlJob1 sleep!!!")
+    Thread.sleep(3*60*1000)
     println("SodaEtlJob1 end!!!")
 
     System.exit(0)
+  }
+
+  /**
+    * 保存到mysql 给前台展现的数据格式
+    * @param point
+    * @param distance
+    * @return
+    */
+  def getPointMapInfo(name:String,point: PointDetail,distance: Double) = {
+    val precursorPoint=packagePointDetail(null,HbaseUtil.getPrecursorResult(point.basic.precursor))
+    (point.rowkey,   //点id
+      point.basic.date, //点日期
+      point.basic.precursor,
+      point.basic.longitude,
+      point.basic.latitude,
+      point.basic.next,
+      name,
+      distance.toInt,
+      if(precursorPoint==null) "" else precursorPoint.basic.longitude,
+      if(precursorPoint==null) "" else precursorPoint.basic.latitude,
+      if(precursorPoint==null) "" else precursorPoint.basic.next)
   }
 
   /**
@@ -85,6 +108,7 @@ object SodaEtlJob {
   }
 
   def packagePointDetail(immutable:ImmutableBytesWritable,result:Result): PointDetail = {
+    if(result==null){return null}
     val rowKey = Bytes.toString(result.getRow)
     val precursor = Bytes.toString(result.getValue("basic".getBytes,"precursor".getBytes))
     val longitude = Bytes.toString(result.getValue("basic".getBytes,"longitude".getBytes))
@@ -94,8 +118,24 @@ object SodaEtlJob {
     val time = Bytes.toString(result.getValue("basic".getBytes,"time".getBytes))
     val valType = Bytes.toString(result.getValue("user".getBytes,"valType".getBytes))
     val value = Bytes.toString(result.getValue("user".getBytes,"value".getBytes))
-    new PointDetail(rowKey,new Basic(precursor,java.lang.Double.parseDouble(longitude),java.lang.Double.parseDouble(latitude),next,date,time),new User(IdentityTypeEnum.convert(valType),value))
+    return new PointDetail(rowKey,new Basic(precursor,java.lang.Double.parseDouble(longitude),java.lang.Double.parseDouble(latitude),next,date,time),new User(IdentityTypeEnum.convert(valType),value))
   }
 
-  case class Point(longitude:Double,latitude:Double)   //latitude纬度
+  case class Point(longitude:Double,latitude:Double)
+
+}
+
+class TimePartitioner(num: Int) extends Partitioner{
+  override def numPartitions: Int = (num+1)
+
+  override def getPartition(key: Any): Int = {
+    println("1key:"+key.toString+" 1getClass:"+key.getClass)
+    var index=0
+    index=Integer.parseInt(key.toString)
+    if(index>num){
+      index=24
+    }
+    println("TimePartitioner index="+index)
+    index
+  }
 }
