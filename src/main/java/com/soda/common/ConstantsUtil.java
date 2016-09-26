@@ -15,6 +15,12 @@ public final class ConstantsUtil implements Serializable{
     public static final String POINT_DETAIL="point_detail";
 
 
+    public static final String REDIS_HOST1="redisAddress1";
+    public static final String REDIS_HOST2="redisAddress2";
+    public static final String REDIS_HOST3="redisAddress3";
+    public static final int REDIS_PORT=12002;
+
+
     private ConstantsUtil() {} // prevent instantiation
 
 }
