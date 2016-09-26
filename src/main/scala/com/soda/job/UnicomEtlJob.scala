@@ -1,6 +1,6 @@
 package com.soda.job
 
-import com.soda.common.{ConfigJob, ObjectId, IdentityTypeEnum}
+import com.soda.common.{ConstantsUtil, ConfigJob, ObjectId, IdentityTypeEnum}
 import com.soda.vo.{Basic, PointDetail,User}
 import org.apache.spark.{SparkContext, SparkConf}
 import scala.collection.mutable.ArrayBuffer
@@ -20,7 +20,7 @@ object UnicomEtlJob extends ConfigJob{
 
     val conf = new SparkConf().setMaster("local").setAppName("UnicomEtlJob") //创建环境变量
     val sc = new SparkContext(conf)  //创建环境变量实例
-    val data = sc.textFile("hdfs://192.168.20.90:9000/soda/test/5.1-位置数据.csv")  //读取数据
+    val data = sc.textFile(ConstantsUtil.HDFS_ADDRESS+"/soda/test/5.1-位置数据.csv")  //读取数据
 
     val userDays=data.filter(_.indexOf("IMEI,00:00-01:00")==(-1)).map(packageUserDay(_))
     val userDaysNum=userDays.collect().length

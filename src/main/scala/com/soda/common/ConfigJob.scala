@@ -23,7 +23,7 @@ trait ConfigJob extends Serializable{
 
   def createRowKey(date: String, time: String):String={
     val uuid=new StringBuffer(new ObjectId().toString).reverse().toString
-    ranDomHex() + uuid.substring(0,uuid.length/2) + date + time
+    ranDomHex() + uuid.substring(0,3) + date + time
   }
 
   val hexChar = Array('0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f')
