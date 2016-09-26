@@ -1,14 +1,271 @@
 CREATE TABLE `point_info_0` (
-  `row_key` varchar(30) NOT NULL DEFAULT '' COMMENT 'id',
-  `name` varchar(20) DEFAULT NULL COMMENT '商圈名称',
-  `date` varchar(8) DEFAULT NULL COMMENT '日期',
-  `target_precursor` varchar(30) DEFAULT NULL COMMENT '目标点，前驱',
-  `target_longitude` varchar(20) DEFAULT NULL COMMENT '目标点，经度',
-  `target_latitude` varchar(20) DEFAULT NULL COMMENT '目标点，纬度',
-  `target_next` varchar(30) DEFAULT NULL COMMENT '目标点，前驱',
-  `distance` varchar(5) DEFAULT NULL COMMENT '当前点到商圈距离，单位米',
-  `src_longitude` varchar(20) DEFAULT NULL COMMENT '源，经度',
-  `src_latitude` varchar(20) DEFAULT NULL COMMENT '源，纬度',
-  `src_next` varchar(30) DEFAULT NULL COMMENT '源，前驱'
+  `row_key` VARCHAR(30) NOT NULL COMMENT 'id',
+  `name` VARCHAR(20) DEFAULT NULL COMMENT '商圈名称',
+  `date` VARCHAR(8) DEFAULT NULL COMMENT '日期',
+  `target_precursor` VARCHAR(30) DEFAULT NULL COMMENT '目标点，前驱',
+  `target_longitude` VARCHAR(30) DEFAULT NULL COMMENT '目标点，经度',
+  `target_latitude` VARCHAR(30) DEFAULT NULL COMMENT '目标点，纬度',
+  `target_next` VARCHAR(30) DEFAULT NULL COMMENT '目标点，前驱',
+  `distance` VARCHAR(5) DEFAULT NULL COMMENT '当前点到商圈距离，单位米',
+  `src_longitude` VARCHAR(30) DEFAULT NULL COMMENT '源，经度',
+  `src_latitude` VARCHAR(30) DEFAULT NULL COMMENT '源，纬度',
+  `src_next` VARCHAR(30) DEFAULT NULL COMMENT '源，前驱',
   PRIMARY KEY (`row_key`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=INNODB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `point_info_1` (
+  `row_key` VARCHAR(30) NOT NULL COMMENT 'id',
+  `name` VARCHAR(20) DEFAULT NULL COMMENT '商圈名称',
+  `date` VARCHAR(8) DEFAULT NULL COMMENT '日期',
+  `target_precursor` VARCHAR(30) DEFAULT NULL COMMENT '目标点，前驱',
+  `target_longitude` VARCHAR(30) DEFAULT NULL COMMENT '目标点，经度',
+  `target_latitude` VARCHAR(30) DEFAULT NULL COMMENT '目标点，纬度',
+  `target_next` VARCHAR(30) DEFAULT NULL COMMENT '目标点，前驱',
+  `distance` VARCHAR(5) DEFAULT NULL COMMENT '当前点到商圈距离，单位米',
+  `src_longitude` VARCHAR(30) DEFAULT NULL COMMENT '源，经度',
+  `src_latitude` VARCHAR(30) DEFAULT NULL COMMENT '源，纬度',
+  `src_next` VARCHAR(30) DEFAULT NULL COMMENT '源，前驱',
+  PRIMARY KEY (`row_key`)
+) ENGINE=INNODB DEFAULT CHARSET=utf8;
+
+
+
+CREATE TABLE `point_info_7` (
+  `row_key` VARCHAR(30) NOT NULL COMMENT 'id',
+  `name` VARCHAR(20) DEFAULT NULL COMMENT '商圈名称',
+  `date` VARCHAR(8) DEFAULT NULL COMMENT '日期',
+  `target_precursor` VARCHAR(30) DEFAULT NULL COMMENT '目标点，前驱',
+  `target_longitude` VARCHAR(30) DEFAULT NULL COMMENT '目标点，经度',
+  `target_latitude` VARCHAR(30) DEFAULT NULL COMMENT '目标点，纬度',
+  `target_next` VARCHAR(30) DEFAULT NULL COMMENT '目标点，前驱',
+  `distance` VARCHAR(5) DEFAULT NULL COMMENT '当前点到商圈距离，单位米',
+  `src_longitude` VARCHAR(30) DEFAULT NULL COMMENT '源，经度',
+  `src_latitude` VARCHAR(30) DEFAULT NULL COMMENT '源，纬度',
+  `src_next` VARCHAR(30) DEFAULT NULL COMMENT '源，前驱',
+  PRIMARY KEY (`row_key`)
+) ENGINE=INNODB DEFAULT CHARSET=utf8;
+CREATE TABLE `point_info_8` (
+  `row_key` VARCHAR(30) NOT NULL COMMENT 'id',
+  `name` VARCHAR(20) DEFAULT NULL COMMENT '商圈名称',
+  `date` VARCHAR(8) DEFAULT NULL COMMENT '日期',
+  `target_precursor` VARCHAR(30) DEFAULT NULL COMMENT '目标点，前驱',
+  `target_longitude` VARCHAR(30) DEFAULT NULL COMMENT '目标点，经度',
+  `target_latitude` VARCHAR(30) DEFAULT NULL COMMENT '目标点，纬度',
+  `target_next` VARCHAR(30) DEFAULT NULL COMMENT '目标点，前驱',
+  `distance` VARCHAR(5) DEFAULT NULL COMMENT '当前点到商圈距离，单位米',
+  `src_longitude` VARCHAR(30) DEFAULT NULL COMMENT '源，经度',
+  `src_latitude` VARCHAR(30) DEFAULT NULL COMMENT '源，纬度',
+  `src_next` VARCHAR(30) DEFAULT NULL COMMENT '源，前驱',
+  PRIMARY KEY (`row_key`)
+) ENGINE=INNODB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `point_info_9` (
+  `row_key` VARCHAR(30) NOT NULL COMMENT 'id',
+  `name` VARCHAR(20) DEFAULT NULL COMMENT '商圈名称',
+  `date` VARCHAR(8) DEFAULT NULL COMMENT '日期',
+  `target_precursor` VARCHAR(30) DEFAULT NULL COMMENT '目标点，前驱',
+  `target_longitude` VARCHAR(30) DEFAULT NULL COMMENT '目标点，经度',
+  `target_latitude` VARCHAR(30) DEFAULT NULL COMMENT '目标点，纬度',
+  `target_next` VARCHAR(30) DEFAULT NULL COMMENT '目标点，前驱',
+  `distance` VARCHAR(5) DEFAULT NULL COMMENT '当前点到商圈距离，单位米',
+  `src_longitude` VARCHAR(30) DEFAULT NULL COMMENT '源，经度',
+  `src_latitude` VARCHAR(30) DEFAULT NULL COMMENT '源，纬度',
+  `src_next` VARCHAR(30) DEFAULT NULL COMMENT '源，前驱',
+  PRIMARY KEY (`row_key`)
+) ENGINE=INNODB DEFAULT CHARSET=utf8;
+CREATE TABLE `point_info_10` (
+  `row_key` VARCHAR(30) NOT NULL COMMENT 'id',
+  `name` VARCHAR(20) DEFAULT NULL COMMENT '商圈名称',
+  `date` VARCHAR(8) DEFAULT NULL COMMENT '日期',
+  `target_precursor` VARCHAR(30) DEFAULT NULL COMMENT '目标点，前驱',
+  `target_longitude` VARCHAR(30) DEFAULT NULL COMMENT '目标点，经度',
+  `target_latitude` VARCHAR(30) DEFAULT NULL COMMENT '目标点，纬度',
+  `target_next` VARCHAR(30) DEFAULT NULL COMMENT '目标点，前驱',
+  `distance` VARCHAR(5) DEFAULT NULL COMMENT '当前点到商圈距离，单位米',
+  `src_longitude` VARCHAR(30) DEFAULT NULL COMMENT '源，经度',
+  `src_latitude` VARCHAR(30) DEFAULT NULL COMMENT '源，纬度',
+  `src_next` VARCHAR(30) DEFAULT NULL COMMENT '源，前驱',
+  PRIMARY KEY (`row_key`)
+) ENGINE=INNODB DEFAULT CHARSET=utf8;
+CREATE TABLE `point_info_11` (
+  `row_key` VARCHAR(30) NOT NULL COMMENT 'id',
+  `name` VARCHAR(20) DEFAULT NULL COMMENT '商圈名称',
+  `date` VARCHAR(8) DEFAULT NULL COMMENT '日期',
+  `target_precursor` VARCHAR(30) DEFAULT NULL COMMENT '目标点，前驱',
+  `target_longitude` VARCHAR(30) DEFAULT NULL COMMENT '目标点，经度',
+  `target_latitude` VARCHAR(30) DEFAULT NULL COMMENT '目标点，纬度',
+  `target_next` VARCHAR(30) DEFAULT NULL COMMENT '目标点，前驱',
+  `distance` VARCHAR(5) DEFAULT NULL COMMENT '当前点到商圈距离，单位米',
+  `src_longitude` VARCHAR(30) DEFAULT NULL COMMENT '源，经度',
+  `src_latitude` VARCHAR(30) DEFAULT NULL COMMENT '源，纬度',
+  `src_next` VARCHAR(30) DEFAULT NULL COMMENT '源，前驱',
+  PRIMARY KEY (`row_key`)
+) ENGINE=INNODB DEFAULT CHARSET=utf8;
+CREATE TABLE `point_info_12` (
+  `row_key` VARCHAR(30) NOT NULL COMMENT 'id',
+  `name` VARCHAR(20) DEFAULT NULL COMMENT '商圈名称',
+  `date` VARCHAR(8) DEFAULT NULL COMMENT '日期',
+  `target_precursor` VARCHAR(30) DEFAULT NULL COMMENT '目标点，前驱',
+  `target_longitude` VARCHAR(30) DEFAULT NULL COMMENT '目标点，经度',
+  `target_latitude` VARCHAR(30) DEFAULT NULL COMMENT '目标点，纬度',
+  `target_next` VARCHAR(30) DEFAULT NULL COMMENT '目标点，前驱',
+  `distance` VARCHAR(5) DEFAULT NULL COMMENT '当前点到商圈距离，单位米',
+  `src_longitude` VARCHAR(30) DEFAULT NULL COMMENT '源，经度',
+  `src_latitude` VARCHAR(30) DEFAULT NULL COMMENT '源，纬度',
+  `src_next` VARCHAR(30) DEFAULT NULL COMMENT '源，前驱',
+  PRIMARY KEY (`row_key`)
+) ENGINE=INNODB DEFAULT CHARSET=utf8;
+CREATE TABLE `point_info_13` (
+  `row_key` VARCHAR(30) NOT NULL COMMENT 'id',
+  `name` VARCHAR(20) DEFAULT NULL COMMENT '商圈名称',
+  `date` VARCHAR(8) DEFAULT NULL COMMENT '日期',
+  `target_precursor` VARCHAR(30) DEFAULT NULL COMMENT '目标点，前驱',
+  `target_longitude` VARCHAR(30) DEFAULT NULL COMMENT '目标点，经度',
+  `target_latitude` VARCHAR(30) DEFAULT NULL COMMENT '目标点，纬度',
+  `target_next` VARCHAR(30) DEFAULT NULL COMMENT '目标点，前驱',
+  `distance` VARCHAR(5) DEFAULT NULL COMMENT '当前点到商圈距离，单位米',
+  `src_longitude` VARCHAR(30) DEFAULT NULL COMMENT '源，经度',
+  `src_latitude` VARCHAR(30) DEFAULT NULL COMMENT '源，纬度',
+  `src_next` VARCHAR(30) DEFAULT NULL COMMENT '源，前驱',
+  PRIMARY KEY (`row_key`)
+) ENGINE=INNODB DEFAULT CHARSET=utf8;
+CREATE TABLE `point_info_14` (
+  `row_key` VARCHAR(30) NOT NULL COMMENT 'id',
+  `name` VARCHAR(20) DEFAULT NULL COMMENT '商圈名称',
+  `date` VARCHAR(8) DEFAULT NULL COMMENT '日期',
+  `target_precursor` VARCHAR(30) DEFAULT NULL COMMENT '目标点，前驱',
+  `target_longitude` VARCHAR(30) DEFAULT NULL COMMENT '目标点，经度',
+  `target_latitude` VARCHAR(30) DEFAULT NULL COMMENT '目标点，纬度',
+  `target_next` VARCHAR(30) DEFAULT NULL COMMENT '目标点，前驱',
+  `distance` VARCHAR(5) DEFAULT NULL COMMENT '当前点到商圈距离，单位米',
+  `src_longitude` VARCHAR(30) DEFAULT NULL COMMENT '源，经度',
+  `src_latitude` VARCHAR(30) DEFAULT NULL COMMENT '源，纬度',
+  `src_next` VARCHAR(30) DEFAULT NULL COMMENT '源，前驱',
+  PRIMARY KEY (`row_key`)
+) ENGINE=INNODB DEFAULT CHARSET=utf8;
+CREATE TABLE `point_info_15` (
+  `row_key` VARCHAR(30) NOT NULL COMMENT 'id',
+  `name` VARCHAR(20) DEFAULT NULL COMMENT '商圈名称',
+  `date` VARCHAR(8) DEFAULT NULL COMMENT '日期',
+  `target_precursor` VARCHAR(30) DEFAULT NULL COMMENT '目标点，前驱',
+  `target_longitude` VARCHAR(30) DEFAULT NULL COMMENT '目标点，经度',
+  `target_latitude` VARCHAR(30) DEFAULT NULL COMMENT '目标点，纬度',
+  `target_next` VARCHAR(30) DEFAULT NULL COMMENT '目标点，前驱',
+  `distance` VARCHAR(5) DEFAULT NULL COMMENT '当前点到商圈距离，单位米',
+  `src_longitude` VARCHAR(30) DEFAULT NULL COMMENT '源，经度',
+  `src_latitude` VARCHAR(30) DEFAULT NULL COMMENT '源，纬度',
+  `src_next` VARCHAR(30) DEFAULT NULL COMMENT '源，前驱',
+  PRIMARY KEY (`row_key`)
+) ENGINE=INNODB DEFAULT CHARSET=utf8;
+CREATE TABLE `point_info_16` (
+  `row_key` VARCHAR(30) NOT NULL COMMENT 'id',
+  `name` VARCHAR(20) DEFAULT NULL COMMENT '商圈名称',
+  `date` VARCHAR(8) DEFAULT NULL COMMENT '日期',
+  `target_precursor` VARCHAR(30) DEFAULT NULL COMMENT '目标点，前驱',
+  `target_longitude` VARCHAR(30) DEFAULT NULL COMMENT '目标点，经度',
+  `target_latitude` VARCHAR(30) DEFAULT NULL COMMENT '目标点，纬度',
+  `target_next` VARCHAR(30) DEFAULT NULL COMMENT '目标点，前驱',
+  `distance` VARCHAR(5) DEFAULT NULL COMMENT '当前点到商圈距离，单位米',
+  `src_longitude` VARCHAR(30) DEFAULT NULL COMMENT '源，经度',
+  `src_latitude` VARCHAR(30) DEFAULT NULL COMMENT '源，纬度',
+  `src_next` VARCHAR(30) DEFAULT NULL COMMENT '源，前驱',
+  PRIMARY KEY (`row_key`)
+) ENGINE=INNODB DEFAULT CHARSET=utf8;
+CREATE TABLE `point_info_17` (
+  `row_key` VARCHAR(30) NOT NULL COMMENT 'id',
+  `name` VARCHAR(20) DEFAULT NULL COMMENT '商圈名称',
+  `date` VARCHAR(8) DEFAULT NULL COMMENT '日期',
+  `target_precursor` VARCHAR(30) DEFAULT NULL COMMENT '目标点，前驱',
+  `target_longitude` VARCHAR(30) DEFAULT NULL COMMENT '目标点，经度',
+  `target_latitude` VARCHAR(30) DEFAULT NULL COMMENT '目标点，纬度',
+  `target_next` VARCHAR(30) DEFAULT NULL COMMENT '目标点，前驱',
+  `distance` VARCHAR(5) DEFAULT NULL COMMENT '当前点到商圈距离，单位米',
+  `src_longitude` VARCHAR(30) DEFAULT NULL COMMENT '源，经度',
+  `src_latitude` VARCHAR(30) DEFAULT NULL COMMENT '源，纬度',
+  `src_next` VARCHAR(30) DEFAULT NULL COMMENT '源，前驱',
+  PRIMARY KEY (`row_key`)
+) ENGINE=INNODB DEFAULT CHARSET=utf8;
+CREATE TABLE `point_info_18` (
+  `row_key` VARCHAR(30) NOT NULL COMMENT 'id',
+  `name` VARCHAR(20) DEFAULT NULL COMMENT '商圈名称',
+  `date` VARCHAR(8) DEFAULT NULL COMMENT '日期',
+  `target_precursor` VARCHAR(30) DEFAULT NULL COMMENT '目标点，前驱',
+  `target_longitude` VARCHAR(30) DEFAULT NULL COMMENT '目标点，经度',
+  `target_latitude` VARCHAR(30) DEFAULT NULL COMMENT '目标点，纬度',
+  `target_next` VARCHAR(30) DEFAULT NULL COMMENT '目标点，前驱',
+  `distance` VARCHAR(5) DEFAULT NULL COMMENT '当前点到商圈距离，单位米',
+  `src_longitude` VARCHAR(30) DEFAULT NULL COMMENT '源，经度',
+  `src_latitude` VARCHAR(30) DEFAULT NULL COMMENT '源，纬度',
+  `src_next` VARCHAR(30) DEFAULT NULL COMMENT '源，前驱',
+  PRIMARY KEY (`row_key`)
+) ENGINE=INNODB DEFAULT CHARSET=utf8;
+CREATE TABLE `point_info_19` (
+  `row_key` VARCHAR(30) NOT NULL COMMENT 'id',
+  `name` VARCHAR(20) DEFAULT NULL COMMENT '商圈名称',
+  `date` VARCHAR(8) DEFAULT NULL COMMENT '日期',
+  `target_precursor` VARCHAR(30) DEFAULT NULL COMMENT '目标点，前驱',
+  `target_longitude` VARCHAR(30) DEFAULT NULL COMMENT '目标点，经度',
+  `target_latitude` VARCHAR(30) DEFAULT NULL COMMENT '目标点，纬度',
+  `target_next` VARCHAR(30) DEFAULT NULL COMMENT '目标点，前驱',
+  `distance` VARCHAR(5) DEFAULT NULL COMMENT '当前点到商圈距离，单位米',
+  `src_longitude` VARCHAR(30) DEFAULT NULL COMMENT '源，经度',
+  `src_latitude` VARCHAR(30) DEFAULT NULL COMMENT '源，纬度',
+  `src_next` VARCHAR(30) DEFAULT NULL COMMENT '源，前驱',
+  PRIMARY KEY (`row_key`)
+) ENGINE=INNODB DEFAULT CHARSET=utf8;
+CREATE TABLE `point_info_20` (
+  `row_key` VARCHAR(30) NOT NULL COMMENT 'id',
+  `name` VARCHAR(20) DEFAULT NULL COMMENT '商圈名称',
+  `date` VARCHAR(8) DEFAULT NULL COMMENT '日期',
+  `target_precursor` VARCHAR(30) DEFAULT NULL COMMENT '目标点，前驱',
+  `target_longitude` VARCHAR(30) DEFAULT NULL COMMENT '目标点，经度',
+  `target_latitude` VARCHAR(30) DEFAULT NULL COMMENT '目标点，纬度',
+  `target_next` VARCHAR(30) DEFAULT NULL COMMENT '目标点，前驱',
+  `distance` VARCHAR(5) DEFAULT NULL COMMENT '当前点到商圈距离，单位米',
+  `src_longitude` VARCHAR(30) DEFAULT NULL COMMENT '源，经度',
+  `src_latitude` VARCHAR(30) DEFAULT NULL COMMENT '源，纬度',
+  `src_next` VARCHAR(30) DEFAULT NULL COMMENT '源，前驱',
+  PRIMARY KEY (`row_key`)
+) ENGINE=INNODB DEFAULT CHARSET=utf8;
+CREATE TABLE `point_info_21` (
+  `row_key` VARCHAR(30) NOT NULL COMMENT 'id',
+  `name` VARCHAR(20) DEFAULT NULL COMMENT '商圈名称',
+  `date` VARCHAR(8) DEFAULT NULL COMMENT '日期',
+  `target_precursor` VARCHAR(30) DEFAULT NULL COMMENT '目标点，前驱',
+  `target_longitude` VARCHAR(30) DEFAULT NULL COMMENT '目标点，经度',
+  `target_latitude` VARCHAR(30) DEFAULT NULL COMMENT '目标点，纬度',
+  `target_next` VARCHAR(30) DEFAULT NULL COMMENT '目标点，前驱',
+  `distance` VARCHAR(5) DEFAULT NULL COMMENT '当前点到商圈距离，单位米',
+  `src_longitude` VARCHAR(30) DEFAULT NULL COMMENT '源，经度',
+  `src_latitude` VARCHAR(30) DEFAULT NULL COMMENT '源，纬度',
+  `src_next` VARCHAR(30) DEFAULT NULL COMMENT '源，前驱',
+  PRIMARY KEY (`row_key`)
+) ENGINE=INNODB DEFAULT CHARSET=utf8;
+CREATE TABLE `point_info_22` (
+  `row_key` VARCHAR(30) NOT NULL COMMENT 'id',
+  `name` VARCHAR(20) DEFAULT NULL COMMENT '商圈名称',
+  `date` VARCHAR(8) DEFAULT NULL COMMENT '日期',
+  `target_precursor` VARCHAR(30) DEFAULT NULL COMMENT '目标点，前驱',
+  `target_longitude` VARCHAR(30) DEFAULT NULL COMMENT '目标点，经度',
+  `target_latitude` VARCHAR(30) DEFAULT NULL COMMENT '目标点，纬度',
+  `target_next` VARCHAR(30) DEFAULT NULL COMMENT '目标点，前驱',
+  `distance` VARCHAR(5) DEFAULT NULL COMMENT '当前点到商圈距离，单位米',
+  `src_longitude` VARCHAR(30) DEFAULT NULL COMMENT '源，经度',
+  `src_latitude` VARCHAR(30) DEFAULT NULL COMMENT '源，纬度',
+  `src_next` VARCHAR(30) DEFAULT NULL COMMENT '源，前驱',
+  PRIMARY KEY (`row_key`)
+) ENGINE=INNODB DEFAULT CHARSET=utf8;
+CREATE TABLE `point_info_23` (
+  `row_key` VARCHAR(30) NOT NULL COMMENT 'id',
+  `name` VARCHAR(20) DEFAULT NULL COMMENT '商圈名称',
+  `date` VARCHAR(8) DEFAULT NULL COMMENT '日期',
+  `target_precursor` VARCHAR(30) DEFAULT NULL COMMENT '目标点，前驱',
+  `target_longitude` VARCHAR(30) DEFAULT NULL COMMENT '目标点，经度',
+  `target_latitude` VARCHAR(30) DEFAULT NULL COMMENT '目标点，纬度',
+  `target_next` VARCHAR(30) DEFAULT NULL COMMENT '目标点，前驱',
+  `distance` VARCHAR(5) DEFAULT NULL COMMENT '当前点到商圈距离，单位米',
+  `src_longitude` VARCHAR(30) DEFAULT NULL COMMENT '源，经度',
+  `src_latitude` VARCHAR(30) DEFAULT NULL COMMENT '源，纬度',
+  `src_next` VARCHAR(30) DEFAULT NULL COMMENT '源，前驱',
+  PRIMARY KEY (`row_key`)
+) ENGINE=INNODB DEFAULT CHARSET=utf8;

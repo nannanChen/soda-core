@@ -21,6 +21,18 @@ public final class ConstantsUtil implements Serializable{
     public static final int REDIS_PORT=12002;
 
 
+    //dbcp配置
+    public static final String DRIVERCLASSNAME="com.mysql.jdbc.Driver";
+    public static final String DB_URL="jdbc:mysql://192.168.20.93:3306/soda?useUnicode=true&characterEncoding=utf-8";
+    public static final String DB_USERNAME="root";
+    public static final String DB_PASSWORD="admin123!!";
+    public static final int maxActive=30;
+    public static final int maxIdle=1;
+    public static final int maxWait=1000;
+    public static final boolean removeAbandoned=true;
+    public static final int removeAbandonedTimeout=180;
+
+
     private ConstantsUtil() {} // prevent instantiation
 
 }
