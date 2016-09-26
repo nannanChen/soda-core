@@ -1,4 +1,4 @@
-package com.soda.test
+package com.soda
 
 import com.soda.common.ObjectId
 import org.apache.hadoop.hbase.util.Bytes
@@ -18,6 +18,9 @@ object Test {
     println(rk.length)
 
 
+    for( a <- 0 until 9){
+      println( "Value of a: " + a );
+    }
   }
 
 }

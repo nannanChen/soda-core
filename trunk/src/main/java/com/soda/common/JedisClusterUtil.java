@@ -25,6 +25,16 @@ public class JedisClusterUtil implements Serializable {
     }
 
 
-
+    private static char[] hexChar={'0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f'};
+    public static void main(String[] args) {
+        JedisCluster pool=JedisClusterUtil.getJedisClusterPool();
+        java.util.Random random=new java.util.Random();
+        StringBuffer hex=new StringBuffer();
+        for (int i=0;i<8;i++) {
+            int result=random.nextInt(16);
+            hex.append(hexChar[result]);
+        }
+        System.out.println(hex.toString());
+    }
 
 }

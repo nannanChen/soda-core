@@ -10,7 +10,7 @@ import scala.collection.mutable.ArrayBuffer
   * spark-submit \
    --master spark://192.168.20.90:7077 \
    --deploy-mode client \
-   --jars /home/hadoop/online/lib/htrace-core-3.0.4.jar,/home/hadoop/online/lib/hbase-common-0.99.2.jar,/home/hadoop/online/lib/hbase-protocol-0.99.2.jar,/home/hadoop/online/lib/hbase-client-0.99.2.jar,/home/hadoop/online/lib/commons-pool2-2.3.jar,/home/hadoop/online/lib/guava-12.0.1.jar  \
+   --jars /home/hadoop/sodatest/lib/hbase-server-1.2.0.jar,/home/hadoop/sodatest/lib/hbase-common-1.2.0.jar,/home/hadoop/sodatest/lib/hbase-protocol-1.2.0.jar,/home/hadoop/sodatest/lib/hbase-client-1.2.0.jar,/home/hadoop/sodatest/lib/guava-11.0.2.jar,/home/hadoop/sodatest/lib/htrace-core-3.1.0-incubating.jar,/home/hadoop/sodatest/lib/metrics-core-2.2.0.jar  \
    --class com.soda.job.UnicomEtlJob /home/hadoop/sodatest/soda-1.0-SNAPSHOT.jar >> soda.log
   * Created by kcao on 2016/9/22.
   */

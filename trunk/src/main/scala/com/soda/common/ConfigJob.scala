@@ -10,20 +10,31 @@ import org.apache.spark.rdd.RDD
   */
 trait ConfigJob extends Serializable{
 
-//  val log_ : Logger = Logger.getLogger(this.getClass)
-
   /**
     * 生成rowkey
+    *
     * @param date
     * @param time
     * @return
     */
   def createRowKey(date: String, time: Int):String={
-    createRowKey(date,time)
+    createRowKey(date,time+"")
   }
 
   def createRowKey(date: String, time: String):String={
-    new StringBuffer(new ObjectId().toString).reverse().toString + date + time
+    val uuid=new StringBuffer(new ObjectId().toString).reverse().toString
+    ranDomHex() + uuid.substring(0,uuid.length/2) + date + time
+  }
+
+  val hexChar = Array('0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f')
+  def ranDomHex(): String ={
+    val hex = new StringBuffer
+    val random=new java.util.Random()
+    for( a <- 0 until 9){
+      val result = random.nextInt(16)
+      hex.append(hexChar(result))
+    }
+    hex.toString
   }
 
   /**
