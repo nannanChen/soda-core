@@ -1,4 +1,4 @@
-create 'point_detail','basic','user',{NUMREGIONS => 20, SPLITALGO => 'HexStringSplit'}
+create 'point_detail_spark','basic','user',{NUMREGIONS => 20, SPLITALGO => 'HexStringSplit'}
 put 'point_detail','2016030100uuid0','basic:precursor','null'
 put 'point_detail','2016030100uuid0','basic:longitude','121.48312'
 put 'point_detail','2016030100uuid0','basic:latitude','31.33478001'
@@ -8,3 +8,5 @@ put 'point_detail','2016030100uuid0','basic:time','00'
 
 put 'point_detail','2016030100uuid0','user:IMEI','e845c0df01f6b30e19b0fa6932307132'
 
+
+create 'point_map_info','hour0','hour1','hour2','hour3','hour4','hour5','hour6','hour7','hour8','hour9','hour10','hour11','hour12','hour13','hour14','hour15','hour16','hour17','hour18','hour19','hour20','hour21','hour22','hour23',{NUMREGIONS => 10, SPLITALGO => 'HexStringSplit'}
