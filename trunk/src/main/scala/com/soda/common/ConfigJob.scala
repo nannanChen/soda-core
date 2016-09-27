@@ -70,7 +70,7 @@ trait ConfigJob extends Serializable{
 //    for(i <- 0 until buffer.size){
 //      log_.info("configPrecursorAndNext: i="+i+" PointDetail="+buffer(i))
 //    }
-    println("================ConfigBean========================configPrecursorAndNext===================end==========================================buffer="+buffer.size)
+//    println("================ConfigBean========================configPrecursorAndNext===================end==========================================buffer="+buffer.size)
     buffer
   }
 
@@ -91,18 +91,22 @@ trait ConfigJob extends Serializable{
   def processArray(records:Array[PointDetail]) = {
     val table: HTable = new HTable(HbaseUtil.getConfiguration,ConstantsUtil.POINT_DETAIL)
     records.foreach(detail=>{
-      val put: Put = new Put(Bytes.toBytes(detail.rowkey))
-      put.add(Bytes.toBytes("basic"), Bytes.toBytes("precursor"), Bytes.toBytes(detail.basic.precursor))
-      put.add(Bytes.toBytes("basic"), Bytes.toBytes("longitude"), Bytes.toBytes(detail.basic.longitude+""))
-      put.add(Bytes.toBytes("basic"), Bytes.toBytes("latitude"), Bytes.toBytes(detail.basic.latitude+""))
-      put.add(Bytes.toBytes("basic"), Bytes.toBytes("next"), Bytes.toBytes(detail.basic.next))
-      put.add(Bytes.toBytes("basic"), Bytes.toBytes("date"), Bytes.toBytes(detail.basic.date))
-      put.add(Bytes.toBytes("basic"), Bytes.toBytes("time"), Bytes.toBytes(detail.basic.time))
-      put.add(Bytes.toBytes("user"), Bytes.toBytes("valType"), Bytes.toBytes(detail.user.valType.toString))
-      put.add(Bytes.toBytes("user"), Bytes.toBytes("value"), Bytes.toBytes(detail.user.value))
-      table.put(put)
-      println("detail.rowkey:"+detail.rowkey)
+      table.put(packagePut(detail))
     })
+  }
+
+
+  def packagePut(detail:PointDetail): Put ={
+    val put: Put = new Put(Bytes.toBytes(detail.rowkey))
+    put.add(Bytes.toBytes("basic"), Bytes.toBytes("precursor"), Bytes.toBytes(detail.basic.precursor))
+    put.add(Bytes.toBytes("basic"), Bytes.toBytes("longitude"), Bytes.toBytes(detail.basic.longitude+""))
+    put.add(Bytes.toBytes("basic"), Bytes.toBytes("latitude"), Bytes.toBytes(detail.basic.latitude+""))
+    put.add(Bytes.toBytes("basic"), Bytes.toBytes("next"), Bytes.toBytes(detail.basic.next))
+    put.add(Bytes.toBytes("basic"), Bytes.toBytes("date"), Bytes.toBytes(detail.basic.date))
+    put.add(Bytes.toBytes("basic"), Bytes.toBytes("time"), Bytes.toBytes(detail.basic.time))
+    put.add(Bytes.toBytes("user"), Bytes.toBytes("valType"), Bytes.toBytes(detail.user.valType.toString))
+    put.add(Bytes.toBytes("user"), Bytes.toBytes("value"), Bytes.toBytes(detail.user.value))
+    put
   }
 
   /**

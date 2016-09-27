@@ -3,10 +3,12 @@ package com.soda.job
 import com.soda.common.{HbaseUtil, DistanceUtil, IdentityTypeEnum, ConstantsUtil}
 import com.soda.vo.{User, Basic, PointDetail}
 import org.apache.hadoop.hbase.HBaseConfiguration
-import org.apache.hadoop.hbase.client.Result
+import org.apache.hadoop.hbase.client.{Put, Result}
 import org.apache.hadoop.hbase.io.ImmutableBytesWritable
+import org.apache.hadoop.hbase.mapred.TableOutputFormat
 import org.apache.hadoop.hbase.mapreduce.TableInputFormat
 import org.apache.hadoop.hbase.util.Bytes
+import org.apache.hadoop.mapred.JobConf
 import org.apache.spark.{Partitioner, SparkConf, SparkContext}
 
 /**
@@ -35,39 +37,69 @@ object SodaEtlJob {
     val conf = new SparkConf().setAppName("SodaEtlJob")
     val sc = new SparkContext(conf)
 
-    val hbaseConf = HBaseConfiguration.create()
-    hbaseConf.set("hbase.zookeeper.property.clientPort", "2181")
-    hbaseConf.set("hbase.zookeeper.quorum", "zk1")
-    hbaseConf.set(TableInputFormat.INPUT_TABLE, ConstantsUtil.POINT_DETAIL)
+    val hbaseReadConf = HBaseConfiguration.create()
+    hbaseReadConf.set("hbase.zookeeper.property.clientPort", "2181")
+    hbaseReadConf.set("hbase.zookeeper.quorum", "zk1,zk2,zk3")
+    hbaseReadConf.set(TableInputFormat.INPUT_TABLE, ConstantsUtil.POINT_DETAIL)
 
     //读取hbase所有点数据
-    val hbaseTable = sc.newAPIHadoopRDD(hbaseConf, classOf[TableInputFormat], classOf[org.apache.hadoop.hbase.io.ImmutableBytesWritable], classOf[org.apache.hadoop.hbase.client.Result])
+    val hbaseTable = sc.newAPIHadoopRDD(hbaseReadConf, classOf[TableInputFormat], classOf[org.apache.hadoop.hbase.io.ImmutableBytesWritable], classOf[org.apache.hadoop.hbase.client.Result])
 
-    println("hbaseTable 33 partitions:"+hbaseTable.partitions.size)
+    val hbaseTableCount=hbaseTable.count()
+    println("hbaseTableCount:"+hbaseTableCount)
 
     //hbase每条数据封装成PointDetail对象
     val pointDetail=hbaseTable.map(tuple2=>packagePointDetail(tuple2._1,tuple2._2))
 
-    //对所有的点按照(小时)进行分区
-    val pointByDateTime=pointDetail.map(point=>{(point.basic.time,point)}).partitionBy(new TimePartitioner(24))
+    val pointDetailCount=pointDetail.count()
+    println("pointDetailCount:"+pointDetailCount)
 
-    println("pointByDateTime 22 pointByDateTime:"+pointByDateTime.partitions.size)
+    //对所有的点按照(小时)进行分区
+    val pointByHour=pointDetail.map(point=>{(point.basic.time,point)}).partitionBy(new HourPartitioner(24))
+
+    val pointByHourCount=pointByHour.count()
+    println("pointByHourCount:"+pointByHourCount)
 
     //计算每个小时内的点跟商圈距离
-    val distancePoint=pointByDateTime.map(dateTime=>{
-      val point=new Point(dateTime._2.basic.longitude,dateTime._2.basic.latitude)
-      (dateTime._2,computeDistance(point,nanJingDong),computeDistance(point,xuJiaHui),computeDistance(point,xinZhuang))
+    val distancePoint=pointByHour.map(hour=>{
+      val point=new Point(hour._2.basic.longitude,hour._2.basic.latitude)
+      (hour._2,computeDistance(point,nanJingDong),computeDistance(point,xuJiaHui),computeDistance(point,xinZhuang))
     }).cache()
 
+    val distancePointCount=distancePoint.count()
+    println("distancePointCount:"+distancePointCount)
 
-    val nanJingDongRs=distancePoint.filter(_._2<distance).map(tuple4=>{(getPointMapInfo("nanJingDong",tuple4._1,tuple4._2))})
-    nanJingDongRs.saveAsTextFile(ConstantsUtil.HDFS_ADDRESS+"/soda/mysql/nanJingDongRs")
 
-    val xuJiaHuiRs=distancePoint.filter(_._3<distance).map(tuple4=>{(getPointMapInfo("xuJiaHui",tuple4._1,tuple4._3))})
-    xuJiaHuiRs.saveAsTextFile(ConstantsUtil.HDFS_ADDRESS+"/soda/mysql/xuJiaHuiRs")
+    val hbaseWriteConf = HBaseConfiguration.create()
+    hbaseWriteConf.set("hbase.zookeeper.property.clientPort", "2181")
+    hbaseWriteConf.set("hbase.zookeeper.quorum", "zk1,zk2,zk3")
+    val jobConf = new JobConf(hbaseWriteConf)
+    jobConf.setOutputFormat(classOf[TableOutputFormat])
+    jobConf.set(TableOutputFormat.OUTPUT_TABLE,ConstantsUtil.POINT_MAP_INFO)
 
-    val xinZhuangRs=distancePoint.filter(_._4<distance).map(tuple4=>{(getPointMapInfo("xinZhuang",tuple4._1,tuple4._4))})
-    xinZhuangRs.saveAsTextFile(ConstantsUtil.HDFS_ADDRESS+"/soda/mysql/xinZhuangRs")
+    val nanJingDongRs=distancePoint.filter(_._2<distance).map(tuple4=>{(getPointMapInfo("nanJingDong",tuple4._1,tuple4._2))}).map(pointInfo=>{(new ImmutableBytesWritable,packagePut(pointInfo))})
+    val nanJingDongPutCount=nanJingDongRs.count()
+    println("nanJingDongPutCount:"+nanJingDongPutCount)
+    nanJingDongRs.saveAsNewAPIHadoopDataset(jobConf)
+
+    val xuJiaHuiRs=distancePoint.filter(_._3<distance).map(tuple4=>{(getPointMapInfo("xuJiaHui",tuple4._1,tuple4._3))}).map(pointInfo=>{(new ImmutableBytesWritable,packagePut(pointInfo))})
+    val xuJiaHuiPutCount=xuJiaHuiRs.count()
+    println("xuJiaHuiPutCount:"+xuJiaHuiPutCount)
+    xuJiaHuiRs.saveAsNewAPIHadoopDataset(jobConf)
+
+    val xinZhuangRs=distancePoint.filter(_._4<distance).map(tuple4=>{(getPointMapInfo("xinZhuang",tuple4._1,tuple4._4))}).map(pointInfo=>{(new ImmutableBytesWritable,packagePut(pointInfo))})
+    val xinZhuangPutCount=xinZhuangRs.count()
+    println("xinZhuangPutCount:"+xinZhuangPutCount)
+    xinZhuangRs.saveAsNewAPIHadoopDataset(jobConf)
+
+//    val nanJingDongRs=distancePoint.filter(_._2<distance).map(tuple4=>{(getPointMapInfo("nanJingDong",tuple4._1,tuple4._2))})
+//    nanJingDongRs.saveAsTextFile(ConstantsUtil.HDFS_ADDRESS+"/soda/mysql/nanJingDongRs")
+//
+//    val xuJiaHuiRs=distancePoint.filter(_._3<distance).map(tuple4=>{(getPointMapInfo("xuJiaHui",tuple4._1,tuple4._3))})
+//    xuJiaHuiRs.saveAsTextFile(ConstantsUtil.HDFS_ADDRESS+"/soda/mysql/xuJiaHuiRs")
+//
+//    val xinZhuangRs=distancePoint.filter(_._4<distance).map(tuple4=>{(getPointMapInfo("xinZhuang",tuple4._1,tuple4._4))})
+//    xinZhuangRs.saveAsTextFile(ConstantsUtil.HDFS_ADDRESS+"/soda/mysql/xinZhuangRs")
 
     println("SodaEtlJob1 sleep!!!")
     Thread.sleep(3*60*1000)
@@ -76,8 +108,25 @@ object SodaEtlJob {
     System.exit(0)
   }
 
+
+  def packagePut(pointInfo: (String, String, String, Double, Double, String, String, Int, Any, Any, String,String)):Put = {
+    val put: Put = new Put(Bytes.toBytes(pointInfo._1))
+    put.add(Bytes.toBytes("hour"+pointInfo._12), Bytes.toBytes("date"), Bytes.toBytes(pointInfo._2))
+    put.add(Bytes.toBytes("hour"+pointInfo._12), Bytes.toBytes("target_precursor"), Bytes.toBytes(pointInfo._3))
+    put.add(Bytes.toBytes("hour"+pointInfo._12), Bytes.toBytes("target_longitude"), Bytes.toBytes(pointInfo._4))
+    put.add(Bytes.toBytes("hour"+pointInfo._12), Bytes.toBytes("target_latitude"), Bytes.toBytes(pointInfo._5))
+    put.add(Bytes.toBytes("hour"+pointInfo._12), Bytes.toBytes("target_next"), Bytes.toBytes(pointInfo._6))
+    put.add(Bytes.toBytes("hour"+pointInfo._12), Bytes.toBytes("name"), Bytes.toBytes(pointInfo._7))
+    put.add(Bytes.toBytes("hour"+pointInfo._12), Bytes.toBytes("distance"), Bytes.toBytes(pointInfo._8))
+    put.add(Bytes.toBytes("hour"+pointInfo._12), Bytes.toBytes("src_longitude"), Bytes.toBytes(pointInfo._9.toString))
+    put.add(Bytes.toBytes("hour"+pointInfo._12), Bytes.toBytes("src_latitude"), Bytes.toBytes(pointInfo._10.toString))
+    put.add(Bytes.toBytes("hour"+pointInfo._12), Bytes.toBytes("src_next"), Bytes.toBytes(pointInfo._11.toString))
+    put
+  }
+
   /**
     * 保存到mysql 给前台展现的数据格式
+    *
     * @param point
     * @param distance
     * @return
@@ -94,7 +143,9 @@ object SodaEtlJob {
       distance.toInt,
       if(precursorPoint==null) "" else precursorPoint.basic.longitude,
       if(precursorPoint==null) "" else precursorPoint.basic.latitude,
-      if(precursorPoint==null) "" else precursorPoint.basic.next)
+      if(precursorPoint==null) "" else precursorPoint.basic.next,
+      point.basic.time)
+
   }
 
   /**
@@ -125,7 +176,7 @@ object SodaEtlJob {
 
 }
 
-class TimePartitioner(num: Int) extends Partitioner{
+class HourPartitioner(num: Int) extends Partitioner{
   override def numPartitions: Int = (num+1)
 
   override def getPartition(key: Any): Int = {
