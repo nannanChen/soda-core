@@ -27,7 +27,9 @@ public class GridDivide implements Serializable {
 
     public static Point[][] grid=new Point[yNum][xNum];
 
-    public static Map<Integer,Point> indexMap=new HashMap<Integer,Point>();
+    public static Map<String,Point> indexMap=new HashMap<String,Point>();
+
+    public static Map<String,Point> addressMap=new HashMap<String,Point>();
 
     static{
         //初始化网格点数据
@@ -42,10 +44,13 @@ public class GridDivide implements Serializable {
             for(int xx=0;xx<grid[yy].length-1;xx++){
                 Point p=grid[yy][xx];
                 int index=indexMap.size();
-                indexMap.put(index+1,new Point(p.x+xStep/2,p.y-yStep/2));
+                indexMap.put((index+1)+"",new Point(p.x+xStep/2,p.y-yStep/2));
             }
         }
 
+        addressMap.put("nanJingDong",new Point(121.4910040000,31.2436160000));
+        addressMap.put("xuJiaHui",new Point(121.4446320000,31.1993870000));
+        addressMap.put("xinZhuang",new Point(121.3914070000,31.1167550000));
     }
 
     public static int findIndex(double x,double y) {
@@ -67,6 +72,25 @@ public class GridDivide implements Serializable {
         }
 //        System.out.println("xIndex:"+xIndex+" yIndex:"+yIndex+" "+grid[yIndex][xIndex]);
         return (yIndex*(xNum-1))+(xIndex+1);
+    }
+
+    /**
+     * 检查点是否在网格内
+     * @param x
+     * @param y
+     * @return 返回true 就是存在
+     */
+    public static boolean checkPoint(double x,double y) {
+        if(x<rightDown.x&&x>leftTop.x&&y<leftTop.y&&y>rightDown.y){
+            int index=GridDivide.findIndex(x,y);
+            if(indexMap.get(index+"")!=null){
+                return true;
+            }else{
+                return false;
+            }
+        }else{
+            return false;
+        }
     }
 
     public static void main(String[] args) throws Exception {
