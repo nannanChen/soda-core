@@ -1,7 +1,6 @@
 package com.soda
 
-import com.soda.common.ObjectId
-import org.apache.hadoop.hbase.util.Bytes
+import java.net.{URLDecoder, URLEncoder}
 
 /**
   * Created by Administrator on 2016/9/23.
@@ -9,14 +8,25 @@ import org.apache.hadoop.hbase.util.Bytes
 object Test {
 
   def main(args: Array[String]) {
-//      val key="20160315,da7eb05faecef79d2077ec48c6d26f24,,,,,,,,,,,,,,,,,,,,,,,,,121.40727,31.29040001,,,,,,,,,,,,,,,,,,,,,,"
-    val key="20160318,abf9cef634641461eabae2a13bd68410,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"
-    val arr=key.replaceAll("\"","")
-    println(arr.split(",").length)
-    val userday=packageUserDay(arr)
-    println(userday)
 
+    val b="abc曹奎".getBytes("GBK")
+
+    b.foreach(println(_))
+    println("================")
+
+    val b1=new String(b,"utf-8")
+    println(b1)
+    println("================")
+
+    val bb=b1.getBytes("utf-8")
+    bb.foreach(println(_))
+
+    println("================")
+    val b2=new String(bb,"GBK")
+    println(b2)
   }
+
+
 
   def packageUserDay(line:String): UserDay ={
     println(line)

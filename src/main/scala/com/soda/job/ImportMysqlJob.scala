@@ -43,6 +43,8 @@ object ImportMysqlJob {
         mySqlUtil.updateByPreparedStatement(sql, params)
       }
     })
+
+    sc.stop()
     System.exit(0)
   }
 

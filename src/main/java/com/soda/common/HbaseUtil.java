@@ -44,13 +44,15 @@ public class HbaseUtil implements Serializable {
         return hadoopConf;
     }
 
+
+    private static  HTablePool tablePool = new HTablePool(hadoopConf, 10);
     public static Result getPrecursorResult(String precursor){
         if("".equals(precursor)||"null".equals(precursor)||precursor==null){
             return null;
         }
-        HTable table = null;
+
         try {
-            table = new HTable(hadoopConf, "point_detail");
+            HTable table = (HTable) tablePool.getTable(ConstantsUtil.POINT_DETAIL);
             while (true){
                 Get get = new Get(precursor.getBytes()); // 根据主键查询
                 Result result = table.get(get);
@@ -66,18 +68,19 @@ public class HbaseUtil implements Serializable {
     }
 
     public static void main(String[] args) throws IOException {
-        HTable table = new HTable(hadoopConf, "point_detail");
-//        Scan scan = new Scan();
+        HTable table = new HTable(hadoopConf, "point_map_info");
 
-//        Filter prefixFilter = new RowFilter(CompareFilter.CompareOp.EQUAL, new BinaryPrefixComparator("201603019".getBytes()));
-//        Filter prefixFilter = new RowFilter(CompareFilter.CompareOp.EQUAL, new RegexStringComparator(".*2016030117"));
-//        scan.setFilter(prefixFilter);
-//
-//        ResultScanner scanner = table.getScanner(scan);
-//        for (Result res : scanner) {
-//            System.out.println(res);
-//        }
-//        scanner.close();
+        Scan scan = new Scan();
+
+//        Filter prefixFilter = new RowFilter(CompareFilter.CompareOp.EQUAL, new BinaryPrefixComparator("201603019".getBytes()));  //0015ae1be2bf2016031910
+        Filter prefixFilter = new RowFilter(CompareFilter.CompareOp.EQUAL, new RegexStringComparator(".*2016031910"));
+        scan.setFilter(prefixFilter);
+
+        ResultScanner scanner = table.getScanner(scan);
+        for (Result res : scanner) {
+            System.out.println(res);
+        }
+        scanner.close();
 
     }
 
