@@ -127,7 +127,6 @@ public class GridDivide implements Serializable {
             System.out.println(start+"---->"+end);
 
         }
-
     }
 
 }

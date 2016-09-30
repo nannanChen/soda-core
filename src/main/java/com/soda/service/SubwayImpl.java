@@ -18,11 +18,22 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Created by Administrator on 2016/9/22.
- */
+  * Created by nan on 2016/9/26 16:42
+  *
+  */
+
 public class SubwayImpl implements Subway,Serializable {
+    //cg4sKjksgLn3svtst32DOpxd2raYipb8  702632E1add3d4953d0f105f27c294b9
     public static final String KEY_1 = "cg4sKjksgLn3svtst32DOpxd2raYipb8";
-    public Map getlongitudeandlatitude(String address) {
+
+    /**
+     * 根据地址从百度API得到经纬度
+     * @param address
+     * @return String
+     */
+    public String getlongitudeandlatitudeFromBaiDu(String address) {
+        System.out.println("传入地址:"+address);
+        String lnglat ="";
         try {
             URL url = new URL("http://api.map.baidu.com/geocoder/v2/?address="+address+"&output=json&ak="+KEY_1+"&qq-pf-to=pcqq.c2c");
             HttpClient httpClient = new DefaultHttpClient();
@@ -30,22 +41,20 @@ public class SubwayImpl implements Subway,Serializable {
             // 在请求消息头中指定语言，保证服务器会返回中文数据
             httpGet.addHeader("Accept-Language", "zh-CN");
             HttpResponse httpResponse = httpClient.execute(httpGet);
-            Map<String, String> map = new HashMap<String, String>();
             if (httpResponse.getStatusLine().getStatusCode() == 200) {
                 HttpEntity entity = httpResponse.getEntity();
                 String response = EntityUtils.toString(entity, "utf-8");
                 JSONObject jsonObject = new JSONObject(response);
                 if(jsonObject.get("status").toString().equals("0")){
                     String lng = jsonObject.getJSONObject("result").getJSONObject("location").get("lng").toString();
-                    String lat = jsonObject.getJSONObject("result").getJSONObject("location").get("lat").toString();
-                    map.put("lng", lng);
-                    map.put("lat", lat);
+                    String lat =  jsonObject.getJSONObject("result").getJSONObject("location").get("lat").toString();
+                    lnglat = lng +","+lat;
                 }
-                return map;
+                return lnglat;
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return null;
+        return "-1"+","+"-1";
     }
 }
