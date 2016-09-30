@@ -1,4 +1,7 @@
-create 'point_detail_opt','basic','user',{NUMREGIONS => 20, SPLITALGO => 'HexStringSplit'}
+create 'point_detail_grid','basic','user',{NUMREGIONS => 20, SPLITALGO => 'HexStringSplit'}
+
+create 'point_detail_grid','basic','user'
+
 put 'point_detail','2016030100uuid0','basic:precursor','null'
 put 'point_detail','2016030100uuid0','basic:longitude','121.48312'
 put 'point_detail','2016030100uuid0','basic:latitude','31.33478001'

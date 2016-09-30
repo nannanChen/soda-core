@@ -1,21 +1,21 @@
-CREATE TABLE `grid_divide_point_num` (
+CREATE TABLE `grid_divide_point_num2` (
   `id` INT(20) not null AUTO_INCREMENT,
   `date` VARCHAR(8) DEFAULT NULL COMMENT '日期',
-  `hour` VARCHAR(20) DEFAULT NULL COMMENT '时刻',
-  `index` VARCHAR(20) DEFAULT NULL COMMENT '网格方框下标',
+  `hour` INT(2) DEFAULT NULL COMMENT '时刻',
+  `index` INT(20) DEFAULT NULL COMMENT '网格方框下标',
   `longitude` VARCHAR(30) DEFAULT NULL COMMENT '经度',
   `latitude` VARCHAR(30) DEFAULT NULL COMMENT '纬度',
-  `count` VARCHAR(5) DEFAULT NULL COMMENT '人数',
+  `count` INT(20) DEFAULT NULL COMMENT '人数',
   primary key (id)
 ) ENGINE=INNODB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `point_map_info` (
   `id` INT(20) not null AUTO_INCREMENT,
   `date` VARCHAR(8) DEFAULT NULL COMMENT '日期',
-  `hour` VARCHAR(20) DEFAULT NULL COMMENT '时刻',
+  `hour` INT(20) DEFAULT NULL COMMENT '时刻',
   `src_longitude` VARCHAR(30) DEFAULT NULL COMMENT '源，经度',
   `src_latitude` VARCHAR(30) DEFAULT NULL COMMENT '源，纬度',
-  `count` VARCHAR(5) DEFAULT NULL COMMENT '人数',
+  `count` INT(20) DEFAULT NULL COMMENT '人数',
   `name` VARCHAR(20) DEFAULT NULL COMMENT '商圈名称',
   `target_precursor` VARCHAR(30) DEFAULT NULL COMMENT '目标点，前驱',
   `target_longitude` VARCHAR(30) DEFAULT NULL COMMENT '目标点，经度',

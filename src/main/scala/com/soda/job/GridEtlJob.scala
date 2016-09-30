@@ -126,10 +126,10 @@ object GridEtlJob {
       iterator.foreach(dataIn => {
         ps = conn.prepareStatement(sql)
         ps.setString(1, dataIn._1)
-        ps.setString(2, dataIn._2)
+        ps.setInt(2, Integer.parseInt(dataIn._2))
         ps.setString(3, dataIn._3.toString)
         ps.setString(4, dataIn._4.toString)
-        ps.setString(5, dataIn._5.toString)
+        ps.setInt(5, dataIn._5)
         ps.setString(6, dataIn._6)
         ps.setString(7, dataIn._7.toString)
         ps.setString(8, dataIn._8.toString)
