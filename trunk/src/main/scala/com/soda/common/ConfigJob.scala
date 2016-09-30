@@ -66,6 +66,7 @@ trait ConfigJob extends Serializable{
   def configPrecursorAndNext(buffer: Array[PointDetail]) = {
 //    log_.info("=============ConfigBean===========================configPrecursorAndNext===================start==============================================================")
     if(buffer.size>0){
+      println("buffer.size:"+buffer.size)
       //设置前驱precursorRowKey
       var precursorRowKey=buffer(0).rowkey
       for(i <- 1 until buffer.size){

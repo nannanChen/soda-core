@@ -1,8 +1,10 @@
 package com.soda.common;
 
 /**
- * Created by Administrator on 2016/9/22.
- */
+  * Created by nan on 2016/9/26 16:41
+  * 
+  */
+
 public class SubData {
     private String CardID;
     private String TradeDate;
@@ -11,26 +13,6 @@ public class SubData {
     private String industry;
     private String amount;
     private String type;
-
-    public String getLng() {
-        return lng;
-    }
-
-    public void setLng(String lng) {
-        this.lng = lng;
-    }
-
-    public String getLat() {
-        return lat;
-    }
-
-    public void setLat(String lat) {
-        this.lat = lat;
-    }
-
-    private String lng;
-    private String lat;
-
     public String getCardID() {
         return CardID;
     }

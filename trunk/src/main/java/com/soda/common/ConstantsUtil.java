@@ -12,16 +12,16 @@ public final class ConstantsUtil implements Serializable{
     //hdfs地址
     public static final String HDFS_ADDRESS="hdfs://masters";
 
-    public static final String POINT_DETAIL="point_detail_grid";
-
     public static final String POINT_MAP_INFO="point_map_info";
-
+    public static final String POINT_DETAIL ="point_detail_grid";
 
     public static final String REDIS_HOST1="redisAddress1";
     public static final String REDIS_HOST2="redisAddress2";
     public static final String REDIS_HOST3="redisAddress3";
     public static final int REDIS_PORT=12002;
 
+    //redis表站点转经纬度
+    public static final String StationToLnglat = "stationToLnglat";
 
     //dbcp配置
     public static final String DRIVERCLASSNAME="com.mysql.jdbc.Driver";
