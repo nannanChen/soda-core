@@ -67,7 +67,7 @@ object SubEtlJob extends ConfigJob {
     val buffer=new ArrayBuffer[PointDetail]()
     val rowKey = createRowKey(cardDay.date,cardDay.time)
     println("---------------------"+rowKey)
-    val pointDetail=new PointDetail(rowKey,new Basic("",cardDay.longitude,cardDay.latitude,"",cardDay.date,cardDay.time),new User(IdentityTypeEnum.CARDID,cardDay.cardID))
+    val pointDetail=new PointDetail(rowKey,new Basic("",cardDay.longitude,cardDay.latitude,"",cardDay.date,Integer.parseInt(cardDay.time),-1),new User(IdentityTypeEnum.CARDID,cardDay.cardID))
     buffer.+=(pointDetail)
     println("packagePointDetail buffer="+buffer.size)
     buffer.toArray

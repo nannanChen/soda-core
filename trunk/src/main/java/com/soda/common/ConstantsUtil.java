@@ -12,7 +12,7 @@ public final class ConstantsUtil implements Serializable{
     //hdfs地址
     public static final String HDFS_ADDRESS="hdfs://masters";
 
-    public static final String POINT_DETAIL="point_detail_opt";
+    public static final String POINT_DETAIL="point_detail_grid";
 
     public static final String POINT_MAP_INFO="point_map_info";
 

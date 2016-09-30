@@ -1,7 +1,7 @@
 package com.soda.job
 
 import java.util.Date
-import com.soda.common.{ConstantsUtil, ConfigJob, IdentityTypeEnum}
+import com.soda.common.{GridDivide, ConstantsUtil, ConfigJob, IdentityTypeEnum}
 import com.soda.vo.{Basic, PointDetail,User}
 import org.apache.hadoop.hbase.HBaseConfiguration
 import org.apache.hadoop.hbase.io.ImmutableBytesWritable
@@ -12,23 +12,15 @@ import scala.collection.mutable.ArrayBuffer
 
 /**
   * 联通数据清洗任务
-  * spark-submit \
-  * --master spark://192.168.20.90:7077 \
-  * --deploy-mode cluster \
-  * --driver-cores 3 \
-  * --executor-memory 5g \
-  * --jars /home/hadoop/sodatest/lib/hbase-server-1.2.0.jar,/home/hadoop/sodatest/lib/hbase-common-1.2.0.jar,/home/hadoop/sodatest/lib/hbase-protocol-1.2.0.jar,/home/hadoop/sodatest/lib/hbase-client-1.2.0.jar,/home/hadoop/sodatest/lib/guava-11.0.2.jar,/home/hadoop/sodatest/lib/htrace-core-3.1.0-incubating.jar,/home/hadoop/sodatest/lib/metrics-core-2.2.0.jar  \
-  * --class com.soda.job.UnicomEtlJob /home/hadoop/sodatest/soda-1.0-SNAPSHOT.jar >> soda.log
-  *
   * /home/hadoop/tools/spark-1.6.0-bin-hadoop2.6/bin/spark-submit \
   * --master yarn \
   * --deploy-mode cluster \
   * --driver-memory 5g \
   * --executor-memory 5g \
-  * --executor-cores 2 \
-  * --num-executors 10 \
+  * --executor-cores 3 \
+  * --num-executors 15 \
   * --jars /home/hadoop/sodatest/lib/hbase-server-1.2.0.jar,/home/hadoop/sodatest/lib/hbase-common-1.2.0.jar,/home/hadoop/sodatest/lib/hbase-protocol-1.2.0.jar,/home/hadoop/sodatest/lib/hbase-client-1.2.0.jar,/home/hadoop/sodatest/lib/guava-11.0.2.jar,/home/hadoop/sodatest/lib/htrace-core-3.1.0-incubating.jar,/home/hadoop/sodatest/lib/metrics-core-2.2.0.jar  \
-  * --class com.soda.job.UnicomEtlJob /home/hadoop/sodatest/soda-1.0-SNAPSHOT-opt.jar >> soda.log
+  * --class com.soda.job.UnicomEtlJob /home/hadoop/sodatest/soda-1.0-SNAPSHOT.jar >> soda.log
   *
   * Created by kcao on 2016/9/22.
   */
@@ -51,28 +43,19 @@ object UnicomEtlJob extends ConfigJob{
 //    val data = sc.textFile("hdfs://192.168.20.90:9000/soda/test/5.1-位置数据.csv")  //读取数据
     val data = sc.textFile("hdfs://192.168.20.90:9000/soda/fusai/表一结果.csv").cache()  //读取数据
 
-    val dataCount=data.count()
-    println(new Date()+" dataCount:"+dataCount)
-
     val userDays=data.map(_.replaceAll("\"","")).filter(_.indexOf("IMEI,00:00-01:00")==(-1)).map(packageUserDay(_))
 
-    val userDaysCount=userDays.count()
-    println(new Date()+" userDaysCount:"+userDaysCount)
+    val pointDetail=userDays.map(packagePointDetail(_)).flatMap(configPrecursorAndNext(_))
 
-    val pointDetail=userDays.flatMap(packagePointDetail(_))
+    val pointDetailPut=pointDetail.map(point=>{
+      (new ImmutableBytesWritable,packagePut(point))
+    })
 
-    val pointDetailCount=pointDetail.count()
-    println(new Date()+" pointDetailCount:"+pointDetailCount)
+    val pointDetailPutCount=pointDetailPut.count()
+    println(new Date()+" pointDetailPutCount:"+pointDetailPutCount)
 
-    val put=pointDetail.map(detail=>{(new ImmutableBytesWritable,packagePut(detail))})
+    pointDetailPut.saveAsHadoopDataset(jobConf)
 
-    val putCount=put.count()
-    println(new Date()+" putCount:"+putCount)
-
-   put.saveAsHadoopDataset(jobConf)
-
-    println(new Date()+" UnicomEtlJob sleep!!!")
-    Thread.sleep(3*60*1000)
     println(new Date()+" UnicomEtlJob end!!!")
 
     sc.stop()
@@ -86,8 +69,9 @@ object UnicomEtlJob extends ConfigJob{
       for(i <- 0 until userDay.trajectory.length){
         val point=userDay.trajectory(i)
         if(point!=null){
-          val rowKey = createRowKey(userDay.date,i)
-          val pointDetail=new PointDetail(rowKey,new Basic("",point.longitude,point.latitude,"",userDay.date,i+""),new User(IdentityTypeEnum.IMEI,userDay.imei))
+          val index=GridDivide.findIndex(point.longitude,point.latitude)
+          val rowKey = createNewRowKey(userDay.date,i,index,userDay.imei)
+          val pointDetail=new PointDetail(rowKey,new Basic("",point.longitude,point.latitude,"",userDay.date,i,-1),new User(IdentityTypeEnum.IMEI,userDay.imei))
           buffer.+=(pointDetail)
         }
       }
@@ -108,7 +92,12 @@ object UnicomEtlJob extends ConfigJob{
         if(index>=arr.length||"".equals(arr(index))){
           trajectory(i)=null;
         }else{
-          trajectory(i)=new Point(java.lang.Double.parseDouble(arr(index)),java.lang.Double.parseDouble(arr(index+1)))
+          val point=new Point(java.lang.Double.parseDouble(arr(index)),java.lang.Double.parseDouble(arr(index+1)))
+          if(GridDivide.checkPoint(point.longitude,point.latitude)){
+            trajectory(i)=point
+          }else{
+            trajectory(i)=null;
+          }
         }
       }
       userDay=new UserDay(arr(0),arr(1),trajectory)

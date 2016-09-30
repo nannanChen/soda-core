@@ -21,6 +21,26 @@ trait ConfigJob extends Serializable{
     createRowKey(date,time+"")
   }
 
+
+  def createNewRowKey(date: String, phour: Int,pindex: Int,psuffix:String):String={
+    var suffix=psuffix
+    if(psuffix.length>10){
+      suffix=psuffix.substring(0,10)
+    }
+    var hour=phour+""
+    if(phour<10){
+      hour="0"+phour
+    }
+    var index=pindex+""
+    if(pindex<10){
+      index="00"+pindex
+    }
+    if(pindex<100&&pindex>=10){
+      index="0"+pindex
+    }
+    index + hour + date + suffix
+  }
+
   def createRowKey(date: String, time: String):String={
     val uuid=new StringBuffer(new ObjectId().toString).reverse().toString
     ranDomHex() + uuid.substring(0,3) + date + time
@@ -103,7 +123,8 @@ trait ConfigJob extends Serializable{
     put.add(Bytes.toBytes("basic"), Bytes.toBytes("latitude"), Bytes.toBytes(detail.basic.latitude+""))
     put.add(Bytes.toBytes("basic"), Bytes.toBytes("next"), Bytes.toBytes(detail.basic.next))
     put.add(Bytes.toBytes("basic"), Bytes.toBytes("date"), Bytes.toBytes(detail.basic.date))
-    put.add(Bytes.toBytes("basic"), Bytes.toBytes("time"), Bytes.toBytes(detail.basic.time))
+    put.add(Bytes.toBytes("basic"), Bytes.toBytes("time"), Bytes.toBytes(detail.basic.hour.toString))
+    put.add(Bytes.toBytes("basic"), Bytes.toBytes("index"), Bytes.toBytes(detail.basic.index.toString))
     put.add(Bytes.toBytes("user"), Bytes.toBytes("valType"), Bytes.toBytes(detail.user.valType.toString))
     put.add(Bytes.toBytes("user"), Bytes.toBytes("value"), Bytes.toBytes(detail.user.value))
     put

@@ -1,7 +1,7 @@
 package com.soda.job
 
 import java.util.Date
-import com.soda.common.{HbaseUtil, DistanceUtil, IdentityTypeEnum, ConstantsUtil}
+import com.soda.common._
 import com.soda.vo.{User, Basic, PointDetail}
 import org.apache.hadoop.hbase.HBaseConfiguration
 import org.apache.hadoop.hbase.client.{Put, Result}
@@ -61,7 +61,7 @@ object SodaEtlJob {
     println(new Date()+" pointDetailCount:"+pointDetailCount)
 
     //对所有的点按照(小时)进行分区
-    val pointByHour=pointDetail.map(point=>{(point.basic.time,point)}).partitionBy(new HourPartitioner(24))
+    val pointByHour=pointDetail.map(point=>{(point.basic.hour,point)}).partitionBy(new HourPartitioner(24))
 
     val pointByHourCount=pointByHour.count()
     println(new Date()+" pointByHourCount:"+pointByHourCount)
@@ -84,20 +84,20 @@ object SodaEtlJob {
     jobConf.setOutputFormat(classOf[TableOutputFormat])
     jobConf.set(TableOutputFormat.OUTPUT_TABLE,ConstantsUtil.POINT_MAP_INFO)
 
-    val nanJingDongRs=distancePoint.filter(_._2<distance).map(tuple4=>{(getPointMapInfo("nanJingDong",tuple4._1,tuple4._2))}).map(pointInfo=>{(new ImmutableBytesWritable,packagePut(pointInfo))})
-    val nanJingDongPutCount=nanJingDongRs.count()
-    println(new Date()+" nanJingDongPutCount:"+nanJingDongPutCount)
-    nanJingDongRs.saveAsHadoopDataset(jobConf)
-
-    val xuJiaHuiRs=distancePoint.filter(_._3<distance).map(tuple4=>{(getPointMapInfo("xuJiaHui",tuple4._1,tuple4._3))}).map(pointInfo=>{(new ImmutableBytesWritable,packagePut(pointInfo))})
-    val xuJiaHuiPutCount=xuJiaHuiRs.count()
-    println(new Date()+" xuJiaHuiPutCount:"+xuJiaHuiPutCount)
-    xuJiaHuiRs.saveAsHadoopDataset(jobConf)
-
-    val xinZhuangRs=distancePoint.filter(_._4<distance).map(tuple4=>{(getPointMapInfo("xinZhuang",tuple4._1,tuple4._4))}).map(pointInfo=>{(new ImmutableBytesWritable,packagePut(pointInfo))})
-    val xinZhuangPutCount=xinZhuangRs.count()
-    println(new Date()+" xinZhuangPutCount:"+xinZhuangPutCount)
-    xinZhuangRs.saveAsHadoopDataset(jobConf)
+//    val nanJingDongRs=distancePoint.filter(_._2<distance).map(tuple4=>{(getPointMapInfo("nanJingDong",tuple4._1,tuple4._2))}).map(pointInfo=>{(new ImmutableBytesWritable,packagePut(pointInfo))})
+//    val nanJingDongPutCount=nanJingDongRs.count()
+//    println(new Date()+" nanJingDongPutCount:"+nanJingDongPutCount)
+//    nanJingDongRs.saveAsHadoopDataset(jobConf)
+//
+//    val xuJiaHuiRs=distancePoint.filter(_._3<distance).map(tuple4=>{(getPointMapInfo("xuJiaHui",tuple4._1,tuple4._3))}).map(pointInfo=>{(new ImmutableBytesWritable,packagePut(pointInfo))})
+//    val xuJiaHuiPutCount=xuJiaHuiRs.count()
+//    println(new Date()+" xuJiaHuiPutCount:"+xuJiaHuiPutCount)
+//    xuJiaHuiRs.saveAsHadoopDataset(jobConf)
+//
+//    val xinZhuangRs=distancePoint.filter(_._4<distance).map(tuple4=>{(getPointMapInfo("xinZhuang",tuple4._1,tuple4._4))}).map(pointInfo=>{(new ImmutableBytesWritable,packagePut(pointInfo))})
+//    val xinZhuangPutCount=xinZhuangRs.count()
+//    println(new Date()+" xinZhuangPutCount:"+xinZhuangPutCount)
+//    xinZhuangRs.saveAsHadoopDataset(jobConf)
 
 //    val nanJingDongRs=distancePoint.filter(_._2<distance).map(tuple4=>{(getPointMapInfo("nanJingDong",tuple4._1,tuple4._2))})
 //    nanJingDongRs.saveAsTextFile(ConstantsUtil.HDFS_ADDRESS+"/soda/mysql/nanJingDongRs")
@@ -152,7 +152,7 @@ object SodaEtlJob {
       if(precursorPoint==null) "" else precursorPoint.basic.longitude,
       if(precursorPoint==null) "" else precursorPoint.basic.latitude,
       if(precursorPoint==null) "" else precursorPoint.basic.next,
-      point.basic.time)
+      point.basic.hour)
 
   }
 
@@ -175,24 +175,13 @@ object SodaEtlJob {
     val next = Bytes.toString(result.getValue("basic".getBytes,"next".getBytes))
     val date = Bytes.toString(result.getValue("basic".getBytes,"date".getBytes))
     val time = Bytes.toString(result.getValue("basic".getBytes,"time".getBytes))
+    val index = Bytes.toString(result.getValue("basic".getBytes,"index".getBytes))
     val valType = Bytes.toString(result.getValue("user".getBytes,"valType".getBytes))
     val value = Bytes.toString(result.getValue("user".getBytes,"value".getBytes))
-    return new PointDetail(rowKey,new Basic(precursor,java.lang.Double.parseDouble(longitude),java.lang.Double.parseDouble(latitude),next,date,time),new User(IdentityTypeEnum.convert(valType),value))
+    return new PointDetail(rowKey,new Basic(precursor,java.lang.Double.parseDouble(longitude),java.lang.Double.parseDouble(latitude),next,date,Integer.parseInt(time),Integer.parseInt(index)),new User(IdentityTypeEnum.convert(valType),value))
   }
 
   case class Point(longitude:Double,latitude:Double)
 
 }
 
-class HourPartitioner(num: Int) extends Partitioner{
-  override def numPartitions: Int = (num+1)
-
-  override def getPartition(key: Any): Int = {
-    var index=0
-    index=Integer.parseInt(key.toString)
-    if(index>num){
-      index=24
-    }
-    index
-  }
-}

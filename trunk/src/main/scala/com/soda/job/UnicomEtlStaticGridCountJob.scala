@@ -7,7 +7,7 @@ import org.apache.spark.{SparkConf, SparkContext}
 import scala.collection.mutable.ArrayBuffer
 
 /**
-  * 联通数据清洗任务
+  * 联通数据清洗任务   静态图：网格方框内人数统计
   *
   * /home/hadoop/tools/spark-1.6.0-bin-hadoop2.6/bin/spark-submit \
   * --master yarn \
@@ -15,18 +15,18 @@ import scala.collection.mutable.ArrayBuffer
   * --driver-memory 5g \
   * --executor-memory 5g \
   * --executor-cores 3 \
-  * --num-executors 10 \
+  * --num-executors 15 \
   * --jars /home/hadoop/sodatest/lib/mysql-connector-java-5.1.38.jar,/home/hadoop/sodatest/lib/hbase-server-1.2.0.jar,/home/hadoop/sodatest/lib/hbase-common-1.2.0.jar,/home/hadoop/sodatest/lib/hbase-protocol-1.2.0.jar,/home/hadoop/sodatest/lib/hbase-client-1.2.0.jar,/home/hadoop/sodatest/lib/guava-11.0.2.jar,/home/hadoop/sodatest/lib/htrace-core-3.1.0-incubating.jar,/home/hadoop/sodatest/lib/metrics-core-2.2.0.jar  \
-  * --class com.soda.job.UnicomEtlJob2 /home/hadoop/sodatest/soda-1.0-SNAPSHOT.jar >> soda.log
+  * --class com.soda.job.UnicomEtlStaticGridCountJob /home/hadoop/sodatest/soda-1.0-SNAPSHOT.jar >> soda.log
   *
   * Created by kcao on 2016/9/22.
   */
-object UnicomEtlJob2{
+object UnicomEtlStaticGridCountJob{
 
   def main(args: Array[String]): Unit = {
 
     System.setProperty("spark.default.parallelism","60")
-    val conf = new SparkConf().setAppName("UnicomEtlJob2") //创建环境变量
+    val conf = new SparkConf().setAppName("UnicomEtlStaticGridCountJob") //创建环境变量
     conf.set("spark.default.parallelism","60")
     val sc = new SparkContext(conf)  //创建环境变量实例
     val data = sc.textFile("hdfs://192.168.20.90:9000/soda/fusai/表一结果.csv").cache()  //读取数据
@@ -66,18 +66,18 @@ object UnicomEtlJob2{
   def toMySQL(iterator: Iterator[(String, String,String, Double, Double, Int)]): Unit = {
     var conn: Connection = null
     var ps: PreparedStatement = null
-    val sql ="insert into `soda`.`grid_divide_point_num` (`date`, `hour`,`index`,`longitude`, `latitude`,`count`) values (?,?,?,?,?,?)";
+    val sql ="insert into `soda`.`grid_divide_point_num2` (`date`, `hour`,`index`,`longitude`, `latitude`,`count`) values (?,?,?,?,?,?)";
     try {
       Class.forName("com.mysql.jdbc.Driver");
       conn = DriverManager.getConnection(ConstantsUtil.DB_URL, ConstantsUtil.DB_USERNAME, ConstantsUtil.DB_PASSWORD)
       iterator.foreach(dataIn => {
         ps = conn.prepareStatement(sql)
         ps.setString(1, dataIn._1)
-        ps.setString(2, dataIn._2)
-        ps.setString(3, dataIn._3.toString)
+        ps.setInt(2, Integer.parseInt(dataIn._2))
+        ps.setInt(3, Integer.parseInt(dataIn._3))
         ps.setString(4, dataIn._4.toString)
         ps.setString(5, dataIn._5.toString)
-        ps.setString(6, dataIn._6.toString)
+        ps.setInt(6, dataIn._6)
         ps.executeUpdate()
       })
     }  finally {

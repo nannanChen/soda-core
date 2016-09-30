@@ -8,7 +8,7 @@ import com.soda.common.IdentityTypeEnum
 
 abstract class Element extends Serializable
 
-case class Basic(var precursor:String,longitude:Double,latitude:Double,var next:String,date:String,time:String) extends  Element //点基本信息  对应hbase的PointDetail表的Basic列簇
+case class Basic(var precursor:String,longitude:Double,latitude:Double,var next:String,date:String,hour:Int,var index:Int) extends  Element //点基本信息  对应hbase的PointDetail表的Basic列簇
 
 case class User(valType:IdentityTypeEnum,value:String) extends  Element //用户信息  对应hbase的PointDetail表的User列簇
 
