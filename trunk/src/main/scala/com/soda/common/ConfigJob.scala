@@ -1,26 +1,11 @@
 package com.soda.common
 
 import com.soda.vo.PointDetail
-import org.apache.hadoop.hbase.client.{Put, HTable}
-import org.apache.hadoop.hbase.util.Bytes
-import org.apache.spark.rdd.RDD
 
 /**
   * Created by kcao on 2016/9/23.
   */
 trait ConfigJob extends Serializable{
-
-  /**
-    * 生成rowkey
-    *
-    * @param date
-    * @param time
-    * @return
-    */
-  def createRowKey(date: String, time: Int):String={
-    createRowKey(date,time+"")
-  }
-
 
   def createNewRowKey(date: String, phour: Int,pindex: Int,psuffix:String):String={
     var suffix=psuffix
@@ -39,22 +24,6 @@ trait ConfigJob extends Serializable{
       index="0"+pindex
     }
     index + hour + date + suffix
-  }
-
-  def createRowKey(date: String, time: String):String={
-    val uuid=new StringBuffer(new ObjectId().toString).reverse().toString
-    ranDomHex() + uuid.substring(0,3) + date + time
-  }
-
-  val hexChar = Array('0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f')
-  def ranDomHex(): String ={
-    val hex = new StringBuffer
-    val random=new java.util.Random()
-    for( a <- 0 until 9){
-      val result = random.nextInt(16)
-      hex.append(hexChar(result))
-    }
-    hex.toString
   }
 
   /**
@@ -93,42 +62,6 @@ trait ConfigJob extends Serializable{
 //    }
 //    println("================ConfigBean========================configPrecursorAndNext===================end==========================================buffer="+buffer.size)
     buffer
-  }
-
-
-  /**
-    * 处理rdd数据
-    * rdd内部每一个元素代表一个对象【手机，公交卡。。。】一天的轨迹。
-    * 每一条轨迹由数组组成，数组内每一个元素代表轨迹上一个点的详细情况
-    *
-    * @param rdd
-    */
-  def processRdd(rdd: RDD[Array[PointDetail]]) = {
-    rdd.map(arr=>configPrecursorAndNext(arr)).foreachPartition(partitionOfRecords=>{
-      partitionOfRecords.foreach(processArray(_))
-    })
-  }
-
-  def processArray(records:Array[PointDetail]) = {
-    val table: HTable = new HTable(HbaseUtil.getConfiguration,ConstantsUtil.POINT_DETAIL)
-    records.foreach(detail=>{
-      table.put(packagePut(detail))
-    })
-  }
-
-
-  def packagePut(detail:PointDetail): Put ={
-    val put: Put = new Put(Bytes.toBytes(detail.rowkey))
-    put.add(Bytes.toBytes("basic"), Bytes.toBytes("precursor"), Bytes.toBytes(detail.basic.precursor))
-    put.add(Bytes.toBytes("basic"), Bytes.toBytes("longitude"), Bytes.toBytes(detail.basic.longitude+""))
-    put.add(Bytes.toBytes("basic"), Bytes.toBytes("latitude"), Bytes.toBytes(detail.basic.latitude+""))
-    put.add(Bytes.toBytes("basic"), Bytes.toBytes("next"), Bytes.toBytes(detail.basic.next))
-    put.add(Bytes.toBytes("basic"), Bytes.toBytes("date"), Bytes.toBytes(detail.basic.date))
-    put.add(Bytes.toBytes("basic"), Bytes.toBytes("time"), Bytes.toBytes(detail.basic.hour.toString))
-    put.add(Bytes.toBytes("basic"), Bytes.toBytes("index"), Bytes.toBytes(detail.basic.index.toString))
-    put.add(Bytes.toBytes("user"), Bytes.toBytes("valType"), Bytes.toBytes(detail.user.valType.toString))
-    put.add(Bytes.toBytes("user"), Bytes.toBytes("value"), Bytes.toBytes(detail.user.value))
-    put
   }
 
   /**
