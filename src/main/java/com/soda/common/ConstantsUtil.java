@@ -15,6 +15,9 @@ public final class ConstantsUtil implements Serializable{
     public static final String POINT_MAP_INFO="point_map_info";
     public static final String POINT_DETAIL ="point_detail_grid";
 
+    public static final String REDIS_POINT_DETAIL_UNICOM="point_detail_unicom";
+    public static final String GRID_FROM_TO_NUM="grid_from_to_num";
+
     public static final String REDIS_HOST1="redisAddress1";
     public static final String REDIS_HOST2="redisAddress2";
     public static final String REDIS_HOST3="redisAddress3";
@@ -25,7 +28,7 @@ public final class ConstantsUtil implements Serializable{
 
     //dbcp配置
     public static final String DRIVERCLASSNAME="com.mysql.jdbc.Driver";
-    public static final String DB_URL="jdbc:mysql://192.168.20.93:3306/soda?useUnicode=true&characterEncoding=utf-8";
+    public static final String DB_URL="jdbc:mysql://192.168.20.92:3306/soda?useUnicode=true&characterEncoding=utf-8";
     public static final String DB_USERNAME="root";
     public static final String DB_PASSWORD="admin123!!";
     public static final int maxActive=30;
