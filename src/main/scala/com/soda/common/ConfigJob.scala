@@ -1,6 +1,8 @@
 package com.soda.common
 
 import com.soda.vo.PointDetail
+import org.apache.hadoop.hbase.client.Put
+import org.apache.hadoop.hbase.util.Bytes
 
 /**
   * Created by kcao on 2016/9/23.
@@ -62,6 +64,20 @@ trait ConfigJob extends Serializable{
 //    }
 //    println("================ConfigBean========================configPrecursorAndNext===================end==========================================buffer="+buffer.size)
     buffer
+  }
+
+  def packagePut(detail:PointDetail): Put ={
+    val put: Put = new Put(Bytes.toBytes(detail.rowkey))
+    put.add(Bytes.toBytes("basic"), Bytes.toBytes("precursor"), Bytes.toBytes(detail.basic.precursor))
+    put.add(Bytes.toBytes("basic"), Bytes.toBytes("longitude"), Bytes.toBytes(detail.basic.longitude+""))
+    put.add(Bytes.toBytes("basic"), Bytes.toBytes("latitude"), Bytes.toBytes(detail.basic.latitude+""))
+    put.add(Bytes.toBytes("basic"), Bytes.toBytes("next"), Bytes.toBytes(detail.basic.next))
+    put.add(Bytes.toBytes("basic"), Bytes.toBytes("date"), Bytes.toBytes(detail.basic.date))
+    put.add(Bytes.toBytes("basic"), Bytes.toBytes("time"), Bytes.toBytes(detail.basic.hour.toString))
+    put.add(Bytes.toBytes("basic"), Bytes.toBytes("index"), Bytes.toBytes(detail.basic.index.toString))
+    put.add(Bytes.toBytes("user"), Bytes.toBytes("valType"), Bytes.toBytes(detail.user.valType.toString))
+    put.add(Bytes.toBytes("user"), Bytes.toBytes("value"), Bytes.toBytes(detail.user.value))
+    put
   }
 
   /**
