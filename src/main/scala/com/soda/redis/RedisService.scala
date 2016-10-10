@@ -28,6 +28,12 @@ object RedisService extends Serializable{
     pool.hset(ConstantsUtil.StationToLnglat,station,lnglat)
   }
 
+  def addTag(iemi:String,tag:String): Unit ={
+    pool.hset(ConstantsUtil.IEMITag,iemi,tag)
+  }
+  def getTag(iemi:String): String ={
+    pool.hget(ConstantsUtil.IEMITag,iemi)
+  }
   /**
     * 根据站点从redis取得经纬度
     * @param station
