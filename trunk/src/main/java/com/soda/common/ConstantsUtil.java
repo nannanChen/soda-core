@@ -25,6 +25,7 @@ public final class ConstantsUtil implements Serializable{
 
     //redis表站点转经纬度
     public static final String StationToLnglat = "stationToLnglat";
+    public static final String IEMITag = "iemiTag";
 
     //dbcp配置
     public static final String DRIVERCLASSNAME="com.mysql.jdbc.Driver";
