@@ -1,6 +1,6 @@
 package com.soda.kmeans
 
-import com.soda.common.HashAlgorithmsUtil
+import com.soda.common.{JedisClusterUtil, ConstantsUtil, HashAlgorithmsUtil}
 import com.soda.redis.RedisService
 import org.apache.spark.mllib.clustering.{KMeans, KMeansModel}
 import org.apache.spark.mllib.linalg.{Vector, Vectors}
@@ -14,7 +14,7 @@ import org.apache.spark.{SparkConf, SparkContext}
 
 /**
   *
-   spark-submit \
+spark-submit \
    --master yarn \
    --deploy-mode cluster \
    --driver-memory 5g \
@@ -27,7 +27,7 @@ import org.apache.spark.{SparkConf, SparkContext}
   */
 
 /**
-   spark-submit \
+spark-submit \
    --master spark://192.168.20.90:7077 \
    --deploy-mode client \
    --jars /home/hadoop/online/lib/spark-mllib_2.10-1.5.2.jar,/home/hadoop/online/lib/jedis-2.8.1.jar,/home/hadoop/online/lib/commons-pool2-2.3.jar \
@@ -43,9 +43,9 @@ object KmeansInterTwo {
 
     val trainingData = cleanData(rawTrainingData).map(x=>{Vectors.dense(x._2)})
 
-//    val txt = cleanData(rawTrainingData).map(x=>{
-//      x._2.mkString(",")
-//    }).saveAsTextFile("hdfs://192.168.20.90:9000/soda/fusai/test")
+    //    val txt = cleanData(rawTrainingData).map(x=>{
+    //      x._2.mkString(",")
+    //    }).saveAsTextFile("hdfs://192.168.20.90:9000/soda/fusai/test")
     val map1 = cleanData(rawTrainingData)
     val numClusters = Array(10)
     val numIteration = 10
@@ -74,37 +74,52 @@ object KmeansInterTwo {
   }
 
   def kmeans(parsedTrainingData: RDD[Vector], numClusters:Int, numIteration:Int, map:RDD[(String,Array[Double])]): Unit ={
-//    var clusterIndex = 0
-//    val cluster = KMeans.train(parsedTrainingData,numClusters,numIteration)
-//    println("类簇 Number:" + cluster.clusterCenters.length)
-//    println("类簇 Centers Information Overvies:")
-//    cluster.clusterCenters.foreach(x=>{
-//      println("类簇 Center Point:"+clusterIndex +":")
-//      println(x)
-//      clusterIndex += 1
-//    })
-
-    val cluster = KMeans.train(parsedTrainingData,numClusters,numIteration)
+    //    var clusterIndex = 0
+    //    val cluster = KMeans.train(parsedTrainingData,numClusters,numIteration)
+    //    println("类簇 Number:" + cluster.clusterCenters.length)
+    //    println("类簇 Centers Information Overvies:")
+    //    cluster.clusterCenters.foreach(x=>{
+    //      println("类簇 Center Point:"+clusterIndex +":")
+    //      println(x)
+    //      clusterIndex += 1
+    //    })
     map.foreachPartition(part=>{
-      part.foreach(tuple2=>{
+      val cluster = KMeans.train(parsedTrainingData,numClusters,numIteration)      part.foreach(tuple2=>{
         val predictedClusterIndex = cluster.predict(Vectors.dense(tuple2._2))
-        RedisService.addTag(tuple2._1,predictedClusterIndex+"")
+        pool.hset("iemiTagThree",tuple2._1,predictedClusterIndex+"")
       })
     })
 
-//    parsedTrainingData.collect().foreach(testDataLine => {
-//      testDataLine.toArray.mkString(",")
-//      val predictedClusterIndex = cluster.predict(testDataLine)
-//      val iemi = map.filter(f=>{
-//        val s1="["+f._2.mkString(",")+"]";
-//        val s2=testDataLine.toString
-//        val rs=s1.equals(s2)
-//        rs
-//      }).map(_._1).foreach(x=>{
-//        RedisService.addTag(x,predictedClusterIndex+"")
+
+    //#2每个分区公用每个分区的训练模型，训练分区间不走网络传输，但每次的训练结果有差异
+//    map.foreachPartition(part=>{
+//      val cluster = KMeans.train(parsedTrainingData,numClusters,numIteration)
+//      part.foreach(tuple2=>{
+//        val predictedClusterIndex = cluster.predict(Vectors.dense(tuple2._2))
+//        RedisService.addTag(tuple2._1,predictedClusterIndex+"")
 //      })
-//
 //    })
+//
+//    //#3多少条数据就有多少个训练模型
+//    map.foreach(tuple2=>{
+//      val cluster = KMeans.train(parsedTrainingData,numClusters,numIteration)
+//      val predictedClusterIndex = cluster.predict(Vectors.dense(tuple2._2))
+//      RedisService.addTag(tuple2._1,predictedClusterIndex+"")
+//    })
+
+    //    parsedTrainingData.collect().foreach(testDataLine => {
+    //      testDataLine.toArray.mkString(",")
+    //      val predictedClusterIndex = cluster.predict(testDataLine)
+    //      val iemi = map.filter(f=>{
+    //        val s1="["+f._2.mkString(",")+"]";
+    //        val s2=testDataLine.toString
+    //        val rs=s1.equals(s2)
+    //        rs
+    //      }).map(_._1).foreach(x=>{
+    //        RedisService.addTag(x,predictedClusterIndex+"")
+    //      })
+    //
+    //    })
   }
   /**
     * 判断该行是否含有某字符串
@@ -112,12 +127,12 @@ object KmeansInterTwo {
     * @param line
     * @return
     */
-   def isColumnNameLine(line:String):Boolean = {
+  def isColumnNameLine(line:String):Boolean = {
     if (line != null && line.contains("**")) true
     else false
   }
 
-   def getBrand(brand:String): String ={
+  def getBrand(brand:String): String ={
     var b =""
     if(brand.equals("苹果"))
       b = "0"
