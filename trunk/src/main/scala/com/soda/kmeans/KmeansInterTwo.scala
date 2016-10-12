@@ -83,8 +83,12 @@ object KmeansInterTwo {
     //      println(x)
     //      clusterIndex += 1
     //    })
+
+    //#1走网络传输，所有分区公用一个训练模型,当其他分区需要模型cluster的时候会从其他exector走网络序列化到所需要分区
+    val cluster = KMeans.train(parsedTrainingData,numClusters,numIteration)
     map.foreachPartition(part=>{
-      val cluster = KMeans.train(parsedTrainingData,numClusters,numIteration)      part.foreach(tuple2=>{
+      val pool = JedisClusterUtil.getJedisClusterPool()
+      part.foreach(tuple2=>{
         val predictedClusterIndex = cluster.predict(Vectors.dense(tuple2._2))
         pool.hset("iemiTagThree",tuple2._1,predictedClusterIndex+"")
       })
