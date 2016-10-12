@@ -40,21 +40,20 @@ object KmeansInterTwo {
     val conf = new SparkConf().setAppName("KmeasInterTwo")
     val sc = new SparkContext(conf)
     val rawTrainingData = sc.textFile("hdfs://192.168.20.90:9000/soda/fusai/biaoerutf8_1.csv")
-      val trainingData = cleanData(rawTrainingData).map(x=>{
-      Vectors.dense(x._2)
-    })
 
-    val txt = cleanData(rawTrainingData).map(x=>{
-      x._2.mkString(",")
-    }).saveAsTextFile("hdfs://192.168.20.90:9000/soda/fusai/test")
-//    val map1 = cleanData(rawTrainingData)
-//    val numClusters = Array(10)
-//    val numIteration = 10
-//    val runTimes = 3
-//    println("----------------START-------------------")
-//    numClusters.foreach(f=>{
-//      kmeans(trainingData,f,numIteration,map1)
-//    })
+    val trainingData = cleanData(rawTrainingData).map(x=>{Vectors.dense(x._2)})
+
+//    val txt = cleanData(rawTrainingData).map(x=>{
+//      x._2.mkString(",")
+//    }).saveAsTextFile("hdfs://192.168.20.90:9000/soda/fusai/test")
+    val map1 = cleanData(rawTrainingData)
+    val numClusters = Array(10)
+    val numIteration = 10
+    val runTimes = 3
+    println("----------------START-------------------")
+    numClusters.foreach(f=>{
+      kmeans(trainingData,f,numIteration,map1)
+    })
     /**
       * 根据以上结果输入数据
       */
@@ -75,28 +74,37 @@ object KmeansInterTwo {
   }
 
   def kmeans(parsedTrainingData: RDD[Vector], numClusters:Int, numIteration:Int, map:RDD[(String,Array[Double])]): Unit ={
-    var clusterIndex = 0
-    val cluster = KMeans.train(parsedTrainingData,numClusters,numIteration)
-    println("类簇 Number:" + cluster.clusterCenters.length)
-    println("类簇 Centers Information Overvies:")
-    cluster.clusterCenters.foreach(x=>{
-      println("类簇 Center Point:"+clusterIndex +":")
-      println(x)
-      clusterIndex += 1
-    })
-    parsedTrainingData.collect().foreach(testDataLine => {
-      testDataLine.toArray.mkString(",")
-      val predictedClusterIndex = cluster.predict(testDataLine)
-      val iemi = map.filter(f=>{
-        val s1="["+f._2.mkString(",")+"]";
-        val s2=testDataLine.toString
-        val rs=s1.equals(s2)
-        rs
-      }).map(_._1).foreach(x=>{
-        RedisService.addTag(x,predictedClusterIndex+"")
-      })
+//    var clusterIndex = 0
+//    val cluster = KMeans.train(parsedTrainingData,numClusters,numIteration)
+//    println("类簇 Number:" + cluster.clusterCenters.length)
+//    println("类簇 Centers Information Overvies:")
+//    cluster.clusterCenters.foreach(x=>{
+//      println("类簇 Center Point:"+clusterIndex +":")
+//      println(x)
+//      clusterIndex += 1
+//    })
 
+    map.foreachPartition(part=>{
+      val cluster = KMeans.train(parsedTrainingData,numClusters,numIteration)
+      part.foreach(tuple2=>{
+        val predictedClusterIndex = cluster.predict(Vectors.dense(tuple2._2))
+        RedisService.addTag(tuple2._1,predictedClusterIndex+"")
+      })
     })
+
+//    parsedTrainingData.collect().foreach(testDataLine => {
+//      testDataLine.toArray.mkString(",")
+//      val predictedClusterIndex = cluster.predict(testDataLine)
+//      val iemi = map.filter(f=>{
+//        val s1="["+f._2.mkString(",")+"]";
+//        val s2=testDataLine.toString
+//        val rs=s1.equals(s2)
+//        rs
+//      }).map(_._1).foreach(x=>{
+//        RedisService.addTag(x,predictedClusterIndex+"")
+//      })
+//
+//    })
   }
   /**
     * 判断该行是否含有某字符串
