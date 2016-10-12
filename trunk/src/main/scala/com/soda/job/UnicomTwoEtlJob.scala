@@ -57,7 +57,7 @@ object UnicomTwoEtlJob{
   def toMySqlGridFromToNum2(iterator: Iterator[(String, String, String, String, Int,String)]): Unit = {
     var conn: Connection = null
     var ps: PreparedStatement = null
-    val sqlMaster ="insert into `soda`.`grid_from_to_num2` (`date`, `hour`,`from_index`,`to_index`,`count`,`grid_people_group_id`) values (?,?,?,?,?,?)"
+    val sqlMaster ="insert into `soda`.`grid_from_to_num3` (`date`, `hour`,`from_index`,`to_index`,`count`,`grid_people_group_id`) values (?,?,?,?,?,?)"
     try {
       Class.forName("com.mysql.jdbc.Driver")
       conn=DataSourceUtil.dataSource.getConnection
@@ -67,7 +67,7 @@ object UnicomTwoEtlJob{
         ps.setInt(2, Integer.parseInt(tuple7._2))
         ps.setInt(3, Integer.parseInt(tuple7._3))
         ps.setInt(4, Integer.parseInt(tuple7._4))
-        ps.setInt(5, tuple7._5)
+        ps.setInt(5, (tuple7._5*XYData.xyDataMap.get(tuple7._1).intValue()))
         ps.setString(6, tuple7._6)
         ps.executeUpdate()
       })
@@ -81,18 +81,18 @@ object UnicomTwoEtlJob{
     }
   }
 
-  def toGridPeopleGroup2(iterator: Iterator[(String,Int,Int)]): Unit = {
+  def toGridPeopleGroup2(iterator: Iterator[(String,Int,Int,String)]): Unit = {
     var conn: Connection = null
     var ps: PreparedStatement = null
-    val sqlSlave ="insert into `soda`.`grid_people_group2` (`grid_people_group_id`, `type`,`count`) values (?,?,?)"
+    val sqlSlave ="insert into `soda`.`grid_people_group3` (`grid_people_group_id`, `type`,`count`) values (?,?,?)"
     try {
       Class.forName("com.mysql.jdbc.Driver")
       conn=DataSourceUtil.dataSource.getConnection
-      iterator.foreach(tuple3 => {
+      iterator.foreach(tuple4 => {
         ps = conn.prepareStatement(sqlSlave)
-        ps.setString(1,tuple3._1)
-        ps.setString(2,"class"+tuple3._2)
-        ps.setInt(3, tuple3._3)
+        ps.setString(1,tuple4._1)
+        ps.setString(2,"class"+tuple4._2)
+        ps.setInt(3, (tuple4._3*XYData.xyDataMap.get(tuple4._4).intValue()))
         ps.executeUpdate()
       })
     }finally {
@@ -115,11 +115,13 @@ object UnicomTwoEtlJob{
     (date,hour,fromIndex,toIndex,kv._2.size,grid_people_id)
   }
 
-  def packagePeopleGroup2(kv: (String,Seq[String])): Array[(String,Int,Int)] = {
-    val buffer=new ArrayBuffer[(String,Int,Int)]()
+  def packagePeopleGroup2(kv: (String,Seq[String])): Array[(String,Int,Int,String)] = {
+    val key=kv._1.split(":")
+    val date=key(0).split("-")(0)
+    val buffer=new ArrayBuffer[(String,Int,Int,String)]()
     val grid_people_id=MD5Hash.getMD5AsHex(Bytes.toBytes(kv._1))
-    kv._2.map(imei=>{(imei.hashCode%3,imei)}).groupBy(_._1).map(kv=>{(kv._1,kv._2.size)}).foreach(kvv=>{
-      buffer.+=((grid_people_id,kvv._1,kvv._2))
+    kv._2.map(imei=>{(Math.abs(imei.hashCode%3),imei)}).groupBy(_._1).map(kv=>{(kv._1,kv._2.size)}).foreach(kvv=>{
+      buffer.+=((grid_people_id,kvv._1,kvv._2,date))
     })
     buffer.toArray
   }
