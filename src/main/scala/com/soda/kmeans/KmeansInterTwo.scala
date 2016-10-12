@@ -84,8 +84,8 @@ object KmeansInterTwo {
 //      clusterIndex += 1
 //    })
 
+    val cluster = KMeans.train(parsedTrainingData,numClusters,numIteration)
     map.foreachPartition(part=>{
-      val cluster = KMeans.train(parsedTrainingData,numClusters,numIteration)
       part.foreach(tuple2=>{
         val predictedClusterIndex = cluster.predict(Vectors.dense(tuple2._2))
         RedisService.addTag(tuple2._1,predictedClusterIndex+"")

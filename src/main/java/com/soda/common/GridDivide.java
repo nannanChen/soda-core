@@ -94,39 +94,8 @@ public class GridDivide implements Serializable {
     }
 
     public static void main(String[] args) throws Exception {
-        System.out.println("xStep:"+xStep);
-        System.out.println("yStep:"+yStep);
-
-        for(int yy=0;yy<grid.length;yy++){
-            for(int xx=0;xx<grid[yy].length;xx++){
-                System.out.print(grid[yy][xx]);
-            }
-            System.out.println();
-        }
-
-        System.out.println(indexMap);
-
-        System.out.println("grid[0].length="+grid[0].length);
-        System.out.println("grid.length="+grid.length);
-
-        int index=findIndex(121.4910040000,31.2436160000);
-        System.out.println(index);
-        System.out.println(indexMap.get(index));
-
-        System.out.println("====================xline===============================");
-        for(int yy=0;yy<GridDivide.grid.length;yy++){  //y递增 没一行的数据 在变化
-            Point start=GridDivide.grid[yy][0];
-            Point end=GridDivide.grid[yy][GridDivide.grid[0].length-1];
-            System.out.println(start+"---->"+end);
-        }
-
-        System.out.println("====================yline===============================");
-        for(int xx=0;xx<GridDivide.grid[0].length;xx++){   //x递增  每一列数据在变化
-            Point start=GridDivide.grid[0][xx];
-            Point end=GridDivide.grid[GridDivide.grid.length-1][xx];
-            System.out.println(start+"---->"+end);
-
-        }
+        Point nanJingDong=new Point(121.4910040000,31.2436160000);
+        System.out.println(findIndex(nanJingDong.x,nanJingDong.y));
     }
 
 }
