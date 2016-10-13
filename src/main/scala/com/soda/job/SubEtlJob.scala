@@ -3,7 +3,6 @@ package com.soda.job
 import java.util.Date
 
 import com.soda.common.{GridDivide, ConstantsUtil, IdentityTypeEnum, ConfigJob}
-import com.soda.job.UnicomEtlJob._
 import com.soda.redis.RedisService
 import com.soda.vo.{User, Basic, PointDetail}
 import org.apache.hadoop.hbase.HBaseConfiguration
