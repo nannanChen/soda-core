@@ -1,8 +1,0 @@
-<component name="ArtifactManager">
-  <artifact type="jar" name="soda-1.0-SNAPSHOT">
-    <output-path>$PROJECT_DIR$/out/artifacts/soda_1_0_SNAPSHOT</output-path>
-    <root id="archive" name="soda-1.0-SNAPSHOT.jar">
-      <element id="module-output" name="soda-core" />
-    </root>
-  </artifact>
-</component>
