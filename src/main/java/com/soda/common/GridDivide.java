@@ -6,6 +6,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * 对于两个点，在纬度相等的情况下：
+ * 经度每隔0.00001度，距离相差约1米；每隔0.0001度，距离相差约10米；每隔0.001度，距离相差约100米；每隔0.01度，距离相差约1000米；每隔0.1度，距离相差约10000米。
+ * 对于两个点，在经度相等的情况下：
+ * 纬度每隔0.00001度，距离相差约1.1米；每隔0.0001度，距离相差约11米；每隔0.001度，距离相差约111米；每隔0.01度，距离相差约1113米；每隔0.1度，距离相差约11132米。
+ *
+ *
  * Created by kcao on 2016/9/28.
  */
 public class GridDivide implements Serializable {
@@ -19,8 +25,8 @@ public class GridDivide implements Serializable {
 //    public static Point rightDown=new Point(121.9515500000,30.9031160000);  //右下角 滴水湖
     public static Point rightDown=new Point(121.9782840000,30.7645710000);  //右下角  东海大桥中间
 
-    public static double x=rightDown.x-leftTop.x;  //宽
-    public static double y=leftTop.y-rightDown.y;  //高
+    public static double x=rightDown.x-leftTop.x;  //宽   0.03902528000000018/0.01*1113=4343M
+    public static double y=leftTop.y-rightDown.y;  //高   0.03475070000000002/0.01*1000=3475M
 
     public static double xStep=x/xNum; //宽的步长
     public static double yStep=y/yNum; //高的步长
@@ -94,8 +100,8 @@ public class GridDivide implements Serializable {
     }
 
     public static void main(String[] args) throws Exception {
-        Point nanJingDong=new Point(121.4910040000,31.2436160000);
-        System.out.println(findIndex(nanJingDong.x,nanJingDong.y));
+        System.out.println("xStep:"+xStep);
+        System.out.println("yStep:"+yStep);
     }
 
 }

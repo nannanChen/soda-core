@@ -117,6 +117,30 @@
             <version>5.1.38</version>
         </dependency>
 
+        <!--<dependency>-->
+            <!--&lt;!&ndash;https://github.com/irvingc/dbscan-on-spark&ndash;&gt;-->
+            <!--&lt;!&ndash;<repository>&ndash;&gt;-->
+                <!--&lt;!&ndash;<id>dbscan-on-spark-repo</id>&ndash;&gt;-->
+                <!--&lt;!&ndash;<name>Repo for DBSCAN on Spark</name>&ndash;&gt;-->
+                <!--&lt;!&ndash;<url>http://dl.bintray.com/irvingc/maven</url>&ndash;&gt;-->
+            <!--&lt;!&ndash;</repository>&ndash;&gt;-->
+            <!--<groupId>com.irvingc.spark</groupId>-->
+            <!--<artifactId>dbscan_2.10</artifactId>-->
+            <!--<version>0.1.0</version>-->
+        <!--</dependency>-->
+
+        <!--<dependency>-->
+            <!--<groupId>com.meetup</groupId>-->
+            <!--<artifactId>archery_2.10</artifactId>-->
+            <!--<version>0.3.0</version>-->
+        <!--</dependency>-->
+
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-math3</artifactId>
+            <version>3.3</version>
+        </dependency>
+
     </dependencies>
 
     <build>

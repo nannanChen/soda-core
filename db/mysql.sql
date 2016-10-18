@@ -17,4 +17,14 @@ CREATE TABLE `grid_from_to_num1` (
   `grid_people_group_id` VARCHAR(50) DEFAULT NULL COMMENT '网格人分组id',
   primary key (id)
 ) ENGINE=INNODB DEFAULT CHARSET=utf8;
-ALTER TABLE `grid_from_to_num1` ADD INDEX date_hour_index ( `date`, `hour`);
+ALTER TABLE `grid_from_to_num1` ADD INDEX date_hour_c_index ( `date`, `hour`,`count`);
+
+
+
+CREATE TABLE `dbscan_point` (
+  `id` INT(20) not null AUTO_INCREMENT,
+  `clusterId` INT(20) DEFAULT NULL COMMENT '中心点',
+  `x` VARCHAR(20) DEFAULT NULL COMMENT 'x',
+  `y` VARCHAR(20) DEFAULT NULL COMMENT 'y',
+  primary key (id)
+) ENGINE=INNODB DEFAULT CHARSET=utf8;
