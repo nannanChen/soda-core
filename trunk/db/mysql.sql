@@ -28,3 +28,13 @@ CREATE TABLE `dbscan_point` (
   `y` VARCHAR(20) DEFAULT NULL COMMENT 'y',
   primary key (id)
 ) ENGINE=INNODB DEFAULT CHARSET=utf8;
+
+
+
+CREATE TABLE `warn_average` (
+  `id` INT(20) not null AUTO_INCREMENT,
+  `grid_index` INT(20) DEFAULT NULL COMMENT '网格下标',
+  `hour` INT(2) DEFAULT NULL COMMENT '小时',
+  `avg` INT(15) DEFAULT NULL COMMENT '平均值',
+  primary key (id)
+) ENGINE=INNODB DEFAULT CHARSET=utf8;
