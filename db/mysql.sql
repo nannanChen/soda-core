@@ -44,7 +44,22 @@ CREATE TABLE `grid_imei_detail` (
   `grid_people_group_id` VARCHAR(50) DEFAULT NULL COMMENT '网格人分组id',
   `type` VARCHAR(10) DEFAULT NULL COMMENT '类型',
   `imei` VARCHAR(50) DEFAULT NULL COMMENT 'imei'
+) ENGINE=MYISAM DEFAULT CHARSET=utf8;
+# 使用MYISAM引擎
+#16/10/27 11:20:53 INFO mapreduce.Job:  map 0% reduce 0%
+#16/10/27 11:25:39 INFO mapreduce.Job:  map 100% reduce 0%
+#4分钟46秒   入库100534520条数据  1亿
+
+
+CREATE TABLE `grid_imei_detail1` (
+  `grid_people_group_id` VARCHAR(50) DEFAULT NULL COMMENT '网格人分组id',
+  `type` VARCHAR(10) DEFAULT NULL COMMENT '类型',
+  `imei` VARCHAR(50) DEFAULT NULL COMMENT 'imei'
 ) ENGINE=INNODB DEFAULT CHARSET=utf8;
+# 使用INNODB引擎
+#16/10/27 11:28:14 INFO mapreduce.Job:  map 0% reduce 0%
+#16/10/27 11:47:38 INFO mapreduce.Job:  map 100% reduce 0%
+#19分钟24秒   入库100534520条数据  1亿
 
 CREATE TABLE `predictData` (
   `count` INT(15) DEFAULT NULL COMMENT '人数',
