@@ -38,3 +38,10 @@ CREATE TABLE `warn_average` (
   `avg` INT(15) DEFAULT NULL COMMENT '平均值',
   primary key (id)
 ) ENGINE=INNODB DEFAULT CHARSET=utf8;
+
+
+CREATE TABLE `grid_imei_detail` (
+  `grid_people_group_id` VARCHAR(50) DEFAULT NULL COMMENT '网格人分组id',
+  `type` VARCHAR(10) DEFAULT NULL COMMENT '类型',
+  `imei` VARCHAR(50) DEFAULT NULL COMMENT 'imei'
+) ENGINE=INNODB DEFAULT CHARSET=utf8;
