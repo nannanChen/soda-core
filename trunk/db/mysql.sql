@@ -45,3 +45,24 @@ CREATE TABLE `grid_imei_detail` (
   `type` VARCHAR(10) DEFAULT NULL COMMENT '类型',
   `imei` VARCHAR(50) DEFAULT NULL COMMENT 'imei'
 ) ENGINE=INNODB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `predictData` (
+  `count` INT(15) DEFAULT NULL COMMENT '人数',
+  `hour` INT(2) DEFAULT NULL COMMENT '时刻',
+  `date` VARCHAR(8) DEFAULT NULL COMMENT '日期',
+  `ind` INT(5) DEFAULT NULL COMMENT '网格方框下标'
+) ENGINE=INNODB AUTO_INCREMENT=3897095 DEFAULT CHARSET=utf8
+
+
+CREATE TABLE `predictManTpye` (
+  `count` INT(15) DEFAULT NULL COMMENT '人数',
+  `date` VARCHAR(8) DEFAULT NULL COMMENT '日期',
+  `hour` INT(2) DEFAULT NULL COMMENT '时刻',
+  `ind` INT(5) DEFAULT NULL COMMENT '网格方框下标',
+  `type` INT(2) DEFAULT NULL COMMENT '类型'
+) ENGINE=INNODB AUTO_INCREMENT=3897095 DEFAULT CHARSET=utf8
+
+create table grid_group_all as
+select DATE, HOUR, from_index,TYPE,sum(a.`count`) s from grid_people_group1 as a join grid_from_to_num1 as b on a.grid_people_group_id=b.grid_people_group_id
+where (from_index = to_index  OR to_index = -1)AND from_index IN (180,157,226)
+group by date, hour, type,from_index
