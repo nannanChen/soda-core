@@ -39,15 +39,21 @@ object UnicomTwoEtlJob{
 
     val groupDHFT=gridDetail.map(grid=>(grid.date+"-"+grid.hour+":"+grid.fromIndex+"->"+grid.toIndex,Seq(grid.imei))).reduceByKey(_.union(_)).cache()
 
-    val gridFromToNum2=groupDHFT.map(packageGridFromToNum2(_))
-    val gridFromToNum2Count=gridFromToNum2.count()
-    println(new Date()+"gridFromToNum2Count:"+gridFromToNum2Count)
-    gridFromToNum2.foreachPartition(toMySqlGridFromToNum2(_))
+//    val gridFromToNum2=groupDHFT.map(packageGridFromToNum2(_))
+//    val gridFromToNum2Count=gridFromToNum2.count()
+//    println(new Date()+"gridFromToNum2Count:"+gridFromToNum2Count)
+//    gridFromToNum2.foreachPartition(toMySqlGridFromToNum2(_))
 
-    val gridPeopleGroup2=groupDHFT.flatMap(packagePeopleGroup2(_))
-    val gridPeopleGroup2Count=gridPeopleGroup2.count()
-    println(new Date()+"gridPeopleGroup2Count:"+gridPeopleGroup2Count)
-    gridPeopleGroup2.foreachPartition(toGridPeopleGroup2(_))
+//    val gridPeopleGroup2=groupDHFT.flatMap(packagePeopleGroup2(_))
+//    val gridPeopleGroup2Count=gridPeopleGroup2.count()
+//    println(new Date()+"gridPeopleGroup2Count:"+gridPeopleGroup2Count)
+//    gridPeopleGroup2.foreachPartition(toGridPeopleGroup2(_))
+
+    val gridImeiDetail=groupDHFT.flatMap(packageImeiDetail(_)).cache()
+    val gridImeiDetailCount=gridImeiDetail.count()
+    println(new Date()+"gridImeiDetailCount:"+gridImeiDetailCount)
+//    gridImeiDetail.foreachPartition(toGridImeiDetail(_))
+    gridImeiDetail.saveAsTextFile("hdfs://192.168.20.90:9000/soda/mysql/GridImeiDetail1")
 
     sc.stop()
     System.exit(0)
@@ -105,6 +111,30 @@ object UnicomTwoEtlJob{
     }
   }
 
+  def toGridImeiDetail(iterator: Iterator[(String,String,String)]): Unit = {
+    var conn: Connection = null
+    var ps: PreparedStatement = null
+    val sqlSlave ="insert into `soda`.`grid_imei_detail` (`grid_people_group_id`,`type`, `imei`) values (?,?,?)"
+    try {
+      Class.forName("com.mysql.jdbc.Driver")
+      conn=DataSourceUtil.dataSource.getConnection
+      iterator.foreach(tuple3 => {
+        ps = conn.prepareStatement(sqlSlave)
+        ps.setString(1,tuple3._1)
+        ps.setString(2,tuple3._2)
+        ps.setString(3,tuple3._3)
+        ps.executeUpdate()
+      })
+    }finally {
+      if (ps != null) {
+        ps.close()
+      }
+      if (conn != null) {
+        conn.close()
+      }
+    }
+  }
+
   def packageGridFromToNum2(kv: (String,Seq[String])): (String, String, String, String, Int,String) = {
     val key=kv._1.split(":")
     val date=key(0).split("-")(0)
@@ -128,6 +158,19 @@ object UnicomTwoEtlJob{
       (typeIndex,imei)
     }).groupBy(_._1).map(kv=>{(kv._1,kv._2.size)}).foreach(kvv=>{
       buffer.+=((grid_people_id,kvv._1,kvv._2,date))
+    })
+    buffer.toArray
+  }
+
+  def packageImeiDetail(kv: (String,Seq[String])): Array[String] = {
+    val buffer=new ArrayBuffer[String]()
+    val grid_people_id=MD5Hash.getMD5AsHex(Bytes.toBytes(kv._1))
+    kv._2.foreach(imei=>{
+      var typeIndex=JedisClusterUtil.getJedisClusterPool().hget("iemiTagThree",imei)
+      if("".equals(typeIndex)||"null".equals(typeIndex)||typeIndex==null){
+        typeIndex="0"
+      }
+      buffer.+=(grid_people_id+","+typeIndex+","+imei)
     })
     buffer.toArray
   }
